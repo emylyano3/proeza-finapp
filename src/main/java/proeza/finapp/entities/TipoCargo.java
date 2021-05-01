@@ -4,13 +4,15 @@ import org.springframework.lang.Nullable;
 
 import java.util.Arrays;
 
-public enum TipoMovimiento {
-    COMPRA("C"),
-    VENTA("V");
+public enum TipoCargo {
+    IMPUESTO("I"),
+    COMISION("C"),
+    DERECHO_MERCADO("D"),
+    OTRO("O");
 
-    String id;
+    private String id;
 
-    TipoMovimiento(String id) {
+    TipoCargo(String id) {
         this.id = id;
     }
 
@@ -19,10 +21,10 @@ public enum TipoMovimiento {
     }
 
     @Nullable
-    public static TipoMovimiento fromId(String id) {
+    public static TipoCargo fromId(String id) {
         return id == null
                 ? null
-                : Arrays.stream(TipoMovimiento.values())
+                : Arrays.stream(TipoCargo.values())
                 .filter(tm -> id.equals(tm.getId()))
                 .findAny()
                 .orElse(null);

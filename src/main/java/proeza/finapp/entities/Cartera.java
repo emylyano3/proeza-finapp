@@ -1,25 +1,51 @@
 package proeza.finapp.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-@Table(name = "fin_cartera")
+@Getter
+@Setter
+@ToString
 @Entity(name = "fin_Cartera")
+@Table(name = "fin_cartera", indexes = {@Index(columnList = "broker_id")})
 public class Cartera extends IdEntity<Long> {
-    @OneToMany(mappedBy = "cartera", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<Activo> activos;
+    @ManyToOne
+    @JoinColumn(name = "broker_id", referencedColumnName = "id")
+    private Broker broker;
 
-    public List<Activo> getActivos() {
-        return activos;
+    @JsonManagedReference
+    @OneToMany(mappedBy = "cartera", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Activo> activos = new ArrayList<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Cartera cartera = (Cartera) o;
+        return Objects.equals(broker, cartera.broker) && Objects.equals(activos, cartera.activos);
     }
 
-    public void setActivos(List<Activo> activos) {
-        this.activos = activos;
+    @Override
+    public int hashCode() {
+        return Objects.hash(broker, activos);
+    }
+
+    public void addActivo(Activo activo) {
+        if (!getActivos().contains(activo))
+            getActivos().add(activo);
     }
 }
-
-
