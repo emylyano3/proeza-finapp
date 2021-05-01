@@ -32,7 +32,7 @@ public class CarteraController {
     }
 
     @PostMapping("/venta")
-    public Cartera venta(@RequestParam Venta venta) {
+    public Cartera venta(@RequestBody Venta venta) {
         return carteraService.venta(venta);
     }
 

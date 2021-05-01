@@ -44,8 +44,12 @@ public class Cartera extends IdEntity<Long> {
         return Objects.hash(broker, activos);
     }
 
-    public void addActivo(Activo activo) {
-        if (!getActivos().contains(activo))
+    public void update(Activo activo) {
+        if (!getActivos().contains(activo) && activo.getTenencia() > 0)
             getActivos().add(activo);
+        else if (getActivos().contains(activo) && activo.getTenencia() == 0) {
+            getActivos().remove(activo);
+            activo.setCartera(null);
+        }
     }
 }

@@ -8,13 +8,12 @@ import proeza.finapp.entities.MovimientoActivo;
 import proeza.finapp.exception.EntityNotFoundException;
 import proeza.finapp.repository.CarteraRepository;
 
-import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
 
 @Builder
-public class CargosCommand implements ICommand {
+public class CargosCommand extends CarteraAbstractCommand {
     private final MovimientoActivo movimiento;
 
     @Autowired
@@ -22,29 +21,23 @@ public class CargosCommand implements ICommand {
 
     private Cartera cartera;
 
-    @Override
-    @Transactional
-    public void execute() {
-        validate();
-        loadContext();
-        businessLogic();
-    }
-
-    private void businessLogic() {
+    protected void businessLogic() {
         double operado = movimiento.getPrecio().doubleValue() * movimiento.getCantidad();
+        //TODO Verificar si es un movimiento intradiario para aplicar o no los nuevos cargos.
+        //TODO Agregar en el broker un flag para saber si aplica o no la exencion de cargo en movs intradiarios
         cartera.getBroker().getCargos().forEach(c -> {
             double totalCargo = (c.getTasaAplicable() - 1) * operado;
             movimiento.addCargo(c, BigDecimal.valueOf(totalCargo));
         });
     }
 
-    private void validate() {
+    protected void validate() {
         Objects.requireNonNull(movimiento);
         Objects.requireNonNull(movimiento.getCartera());
         Objects.requireNonNull(movimiento.getCartera().getId());
     }
 
-    private void loadContext() {
+    protected void loadContext() {
         Optional<Cartera> opCartera = carteraRepository.findById(movimiento.getCartera().getId());
         cartera = opCartera.orElseThrow(() -> entityNotFoundException(Cartera.class.getSimpleName(), movimiento.getCartera().getId()));
     }

@@ -13,19 +13,19 @@ public class CommandsFactory {
 
     @Bean
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    public CargosCommand  cargosCommand(MovimientoActivo movimiento) {
+    public CargosCommand cargosCommand(MovimientoActivo movimiento) {
         return CargosCommand.builder().movimiento(movimiento).build();
     }
 
     @Bean
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    public VentaCommand ventaCommand(Venta venta) {
-        return VentaCommand.builder().venta(venta).build();
+    public MovimientoActivoCommand ventaCommand(Venta venta) {
+        return MovimientoActivoCommand.builder().movimiento(venta).build();
     }
 
     @Bean
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    public CompraCommand compraCommand(Compra compra) {
-        return CompraCommand.builder().compra(compra).build();
+    public MovimientoActivoCommand compraCommand(Compra compra) {
+        return MovimientoActivoCommand.builder().movimiento(compra).build();
     }
 }

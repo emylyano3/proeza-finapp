@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Where;
+import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,19 +19,18 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
 @Entity(name = "fin_Activo")
-@Table(name = "fin_activo", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"cartera_id", "instrumento_id"})
-}, indexes = {
+@Table(name = "fin_activo", indexes = {
         @Index(columnList = "cartera_id"),
         @Index(columnList = "instrumento_id")
 })
@@ -39,6 +39,7 @@ public class Activo extends IdEntity<Long> {
     public Activo(Cartera cartera, Instrumento instrumento) {
         this.cartera = cartera;
         this.instrumento = instrumento;
+        this.tenencia = 0;
     }
 
     @JsonBackReference
@@ -68,15 +69,40 @@ public class Activo extends IdEntity<Long> {
     private Integer tenencia;
 
     @Transient
-    public void addCompra(Compra compra) {
-        compras.add(compra);
-        int cantidad = 0;
-        double volumen = 0;
-        for (Compra c : compras) {
-            cantidad += c.getCantidad();
-            volumen += c.getCantidad() * c.getPrecio().doubleValue();
-        }
-        ppc = BigDecimal.valueOf(volumen / cantidad);
-        tenencia += compra.getCantidad();
+    public void addMovimiento(MovimientoActivo movimiento) {
+        addMovementActions.get(movimiento.getClass()).accept(movimiento);
+    }
+
+    @Transient
+    private Map<Class<?>, Consumer<MovimientoActivo>> addMovementActions = Map.of(
+            Venta.class, getVentaAction(),
+            Compra.class, getCompraAction()
+    );
+
+    @NotNull
+    @Transient
+    private Consumer<MovimientoActivo> getCompraAction() {
+        return movimientoActivo -> {
+            Compra compra = (Compra) movimientoActivo;
+            compras.add(compra);
+            int cantidad = 0;
+            double volumen = 0;
+            for (Compra c : compras) {
+                cantidad += c.getCantidad();
+                volumen += c.getCantidad() * c.getPrecio().doubleValue();
+            }
+            ppc = BigDecimal.valueOf(volumen / cantidad);
+            tenencia += compra.getCantidad();
+        };
+    }
+
+    @NotNull
+    @Transient
+    private Consumer<MovimientoActivo> getVentaAction() {
+        return movimientoActivo -> {
+            Venta venta = (Venta) movimientoActivo;
+            ventas.add(venta);
+            tenencia -= venta.getCantidad();
+        };
     }
 }
