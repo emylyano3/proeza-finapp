@@ -6,7 +6,6 @@ import proeza.finapp.entities.Activo;
 import proeza.finapp.entities.Cartera;
 import proeza.finapp.entities.Instrumento;
 import proeza.finapp.entities.MovimientoActivo;
-import proeza.finapp.exception.EntityNotFoundException;
 import proeza.finapp.repository.ActivoRepository;
 import proeza.finapp.repository.CarteraRepository;
 import proeza.finapp.repository.InstrumentoRepository;
@@ -63,9 +62,5 @@ public class MovimientoActivoCommand extends CarteraAbstractCommand {
         instrumento = opInstrumento.orElseThrow(() -> entityNotFoundException(Instrumento.class.getSimpleName(), movimiento.getInstrumento().getId()));
         Optional<Activo> opActivo = activoRepository.findByCarteraAndInstrumento(cartera, instrumento);
         activo = opActivo.orElse(new Activo(cartera, instrumento));
-    }
-
-    private EntityNotFoundException entityNotFoundException(String entityName, Long id) {
-        return new EntityNotFoundException(String.format("No se encontro la entidad %s con id %s", entityName, id));
     }
 }

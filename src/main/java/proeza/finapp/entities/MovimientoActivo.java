@@ -26,7 +26,11 @@ import java.util.Set;
 @Setter
 @ToString
 @Entity(name = "fin_MovimientoActivo")
-@Table(name = "fin_movimiento_activo", indexes = {@Index(columnList = "activo_id")})
+@Table(name = "fin_movimiento_activo", indexes = {
+        @Index(columnList = "cartera_id"),
+        @Index(columnList = "activo_id"),
+        @Index(columnList = "instrumento_id")
+})
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "tipo", length = 1)
 public class MovimientoActivo extends IdEntity<Long> {
@@ -46,13 +50,13 @@ public class MovimientoActivo extends IdEntity<Long> {
     @Column(nullable = false)
     private Integer cantidad;
 
-    @Column(nullable = false, scale = 3, precision = 10)
+    @Column(nullable = false, scale = 2, precision = 10)
     private BigDecimal precio;
 
     @Column(nullable = false)
     private LocalDateTime fecha;
 
-    @Column(scale = 3, precision = 10)
+    @Column(scale = 2, precision = 10)
     private BigDecimal montoCargos;
 
     @JsonIgnore

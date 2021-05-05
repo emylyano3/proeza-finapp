@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import proeza.finapp.entities.Compra;
 import proeza.finapp.entities.MovimientoActivo;
+import proeza.finapp.entities.MovimientoCuenta;
 import proeza.finapp.entities.Venta;
 
 @Configuration
@@ -27,5 +28,11 @@ public class CommandsFactory {
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
     public MovimientoActivoCommand compraCommand(Compra compra) {
         return MovimientoActivoCommand.builder().movimiento(compra).build();
+    }
+
+    @Bean
+    @Scope(BeanDefinition.SCOPE_PROTOTYPE)
+    public MovimientoCuentaCommand  movimientoCuentaCommand(MovimientoCuenta movimiento) {
+        return MovimientoCuentaCommand.builder().movimiento(movimiento).build();
     }
 }

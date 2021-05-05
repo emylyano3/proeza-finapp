@@ -27,6 +27,10 @@ public class Cartera extends IdEntity<Long> {
     @JoinColumn(name = "broker_id", referencedColumnName = "id")
     private Broker broker;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "cuenta_id", referencedColumnName = "id")
+    private Cuenta cuenta;
+
     @JsonManagedReference
     @OneToMany(mappedBy = "cartera", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Activo> activos = new ArrayList<>();

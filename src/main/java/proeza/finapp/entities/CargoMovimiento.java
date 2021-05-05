@@ -36,6 +36,6 @@ public class CargoMovimiento extends IdEntity<Long> {
     @JoinColumn(name = "movimiento_id", referencedColumnName = "id")
     private MovimientoActivo movimiento;
 
-    @Column(nullable = false, scale = 3, precision = 10)
+    @Column(nullable = false, scale = 2, precision = 10)
     private BigDecimal monto;
 }

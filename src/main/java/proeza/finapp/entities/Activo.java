@@ -73,6 +73,7 @@ public class Activo extends IdEntity<Long> {
         addMovementActions.get(movimiento.getClass()).accept(movimiento);
     }
 
+    @JsonIgnore
     @Transient
     private Map<Class<?>, Consumer<MovimientoActivo>> addMovementActions = Map.of(
             Venta.class, getVentaAction(),

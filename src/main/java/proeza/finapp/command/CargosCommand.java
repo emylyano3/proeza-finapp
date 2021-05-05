@@ -1,11 +1,9 @@
 package proeza.finapp.command;
 
 import lombok.Builder;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import proeza.finapp.entities.Cartera;
 import proeza.finapp.entities.MovimientoActivo;
-import proeza.finapp.exception.EntityNotFoundException;
 import proeza.finapp.repository.CarteraRepository;
 
 import java.math.BigDecimal;
@@ -40,10 +38,5 @@ public class CargosCommand extends CarteraAbstractCommand {
     protected void loadContext() {
         Optional<Cartera> opCartera = carteraRepository.findById(movimiento.getCartera().getId());
         cartera = opCartera.orElseThrow(() -> entityNotFoundException(Cartera.class.getSimpleName(), movimiento.getCartera().getId()));
-    }
-
-    @NotNull
-    private EntityNotFoundException entityNotFoundException(String entityName, Long id) {
-        return new EntityNotFoundException(String.format("No se encontro la entidad %s con id %s", entityName, id));
     }
 }
