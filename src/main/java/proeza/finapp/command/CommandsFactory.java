@@ -32,7 +32,7 @@ public class CommandsFactory {
 
     @Bean
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    public MovimientoCuentaCommand  movimientoCuentaCommand(MovimientoCuenta movimiento) {
+    public MovimientoCuentaCommand movimientoCuentaCommand(MovimientoCuenta movimiento) {
         return MovimientoCuentaCommand.builder().movimiento(movimiento).build();
     }
 }

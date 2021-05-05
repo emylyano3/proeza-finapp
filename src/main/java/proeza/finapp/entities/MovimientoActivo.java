@@ -63,6 +63,14 @@ public class MovimientoActivo extends IdEntity<Long> {
     @OneToMany(mappedBy = "movimiento", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<CargoMovimiento> detalleCargos = new HashSet<>();
 
+    public BigDecimal getOperado() {
+        return BigDecimal.valueOf(precio.doubleValue() * cantidad);
+    }
+
+    public BigDecimal getTotalMovimiento() {
+        return montoCargos.add(getOperado());
+    }
+
     public void addCargo(Cargo c, BigDecimal monto) {
         montoCargos = montoCargos == null ? monto : montoCargos.add(monto);
         CargoMovimiento cm = new CargoMovimiento();

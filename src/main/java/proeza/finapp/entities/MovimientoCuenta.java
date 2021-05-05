@@ -1,6 +1,7 @@
 package proeza.finapp.entities;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 @Entity(name = "fin_MovimientoCuenta")
 @Table(name = "fin_movimiento_cuenta", indexes = {
         @Index(columnList = "cuenta_id")
@@ -26,6 +28,12 @@ import java.time.LocalDateTime;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "tipo", length = 1)
 public class MovimientoCuenta extends IdEntity<Long> {
+
+    public MovimientoCuenta(MovimientoActivo movimientoActivo) {
+        cuenta = movimientoActivo.getCartera().getCuenta();
+        monto = movimientoActivo.getTotalMovimiento();
+        fecha = movimientoActivo.getFecha();
+    }
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "cuenta_id", referencedColumnName = "id")

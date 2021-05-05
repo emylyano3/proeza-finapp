@@ -4,8 +4,12 @@ import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import proeza.finapp.entities.Activo;
 import proeza.finapp.entities.Cartera;
+import proeza.finapp.entities.Compra;
+import proeza.finapp.entities.Deposito;
+import proeza.finapp.entities.Extraccion;
 import proeza.finapp.entities.Instrumento;
 import proeza.finapp.entities.MovimientoActivo;
+import proeza.finapp.entities.MovimientoCuenta;
 import proeza.finapp.repository.ActivoRepository;
 import proeza.finapp.repository.CarteraRepository;
 import proeza.finapp.repository.InstrumentoRepository;
@@ -43,6 +47,13 @@ public class MovimientoActivoCommand extends CarteraAbstractCommand {
         movimiento.setFecha(LocalDateTime.now());
         activo.addMovimiento(movimiento);
         cartera.update(activo);
+        commandsFactory.movimientoCuentaCommand(buildMovimientoCuenta()).execute();
+    }
+
+    private MovimientoCuenta buildMovimientoCuenta() {
+        return movimiento instanceof Compra
+                ? new Extraccion(movimiento)
+                : new Deposito(movimiento);
     }
 
     protected void validate() {

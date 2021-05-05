@@ -9,4 +9,7 @@ import javax.persistence.Entity;
 @DiscriminatorValue("D")
 @Entity(name = "fin_Deposito")
 public class Deposito extends MovimientoCuenta {
+    public Deposito(MovimientoActivo movimientoActivo) {
+        super(movimientoActivo);
+    }
 }
