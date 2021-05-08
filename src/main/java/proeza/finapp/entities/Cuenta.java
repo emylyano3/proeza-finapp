@@ -11,8 +11,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,11 +25,11 @@ public class Cuenta extends IdEntity<Long> {
 
     @JsonIgnore
     @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL)
-    private Set<Cartera> carteras = new HashSet<>(0);
+    private List<Cartera> carteras = new ArrayList<>(0);
 
     @JsonIgnore
     @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL)
-    private Set<MovimientoCuenta> movimientosCuenta = new HashSet<>(0);
+    private List<MovimientoCuenta> movimientosCuenta = new ArrayList<>(0);
 
     @Transient
     public void acreditar(BigDecimal monto) {
@@ -42,15 +42,24 @@ public class Cuenta extends IdEntity<Long> {
     }
 
     /**
-     * Agrega el movimiento a la cuenta y actualiza el saldo de acuerdo al tipo de movimiento.
+     * Agrega el deposito a los movimientos asociados a la cuenta y actualiza el saldo.
+     *
+     * @param deposito El deposito a impactar en la cuenta
      */
     @Transient
-    public void addMovimiento(MovimientoCuenta movimiento) {
-        movimientosCuenta.add(movimiento);
-        if (movimiento instanceof Deposito) {
-            movimiento.getCuenta().acreditar(movimiento.getMonto());
-        } else {
-            movimiento.getCuenta().debitar(movimiento.getMonto());
-        }
+    public void addDeposito(Deposito deposito) {
+        movimientosCuenta.add(deposito);
+        acreditar(deposito.getMonto());
+    }
+
+    /**
+     * Agrega la extraccion a los movimientos asociados a la cuenta y actualiza el saldo.
+     *
+     * @param extraccion La extraccion a impactar en la cuenta
+     */
+    @Transient
+    public void addExtraccion(Extraccion extraccion) {
+        movimientosCuenta.add(extraccion);
+        debitar(extraccion.getMonto());
     }
 }

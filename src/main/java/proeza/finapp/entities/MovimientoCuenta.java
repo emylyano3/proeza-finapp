@@ -27,7 +27,7 @@ import java.time.LocalDateTime;
 })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "tipo", length = 1)
-public class MovimientoCuenta extends IdEntity<Long> {
+public abstract class MovimientoCuenta extends IdEntity<Long> {
 
     public MovimientoCuenta(MovimientoActivo movimientoActivo) {
         cuenta = movimientoActivo.getCartera().getCuenta();

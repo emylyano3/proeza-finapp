@@ -9,7 +9,4 @@ import javax.persistence.Entity;
 @DiscriminatorValue("E")
 @Entity(name = "fin_Extraccion")
 public class Extraccion extends MovimientoCuenta {
-    public Extraccion(MovimientoActivo movimientoActivo) {
-        super(movimientoActivo);
-    }
 }
