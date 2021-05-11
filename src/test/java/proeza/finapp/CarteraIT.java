@@ -13,6 +13,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import proeza.finapp.entities.Cuenta;
 import proeza.finapp.entities.Deposito;
+import proeza.finapp.entities.Extraccion;
 
 import javax.transaction.Transactional;
 
@@ -58,6 +59,21 @@ public class CarteraIT {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.saldo", is(4852.16)));
+    }
+
+    @Test
+    public void cuandoHagoUnaExtraccion_entoncesElSaldoDeLaCuentaDisminuye() throws Exception {
+        Cuenta cuenta = new Cuenta();
+        cuenta.setId(1L);
+        Extraccion extraccion = new Extraccion(cuenta, BigDecimal.valueOf(1000));
+        this.mockMvc
+                .perform(post("/api/cuenta/extraccion")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(getObjectMapper().writeValueAsBytes(extraccion)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.saldo", is(2852.16)));
     }
 
     protected ObjectMapper getObjectMapper() {
