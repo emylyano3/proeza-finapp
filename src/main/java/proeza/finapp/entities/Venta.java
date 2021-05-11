@@ -15,6 +15,6 @@ public class Venta extends MovimientoActivo {
      * @return el monto operado quitando los cargos del movimiento
      */
     public BigDecimal getMontoNeto () {
-        return getOperado().subtract(getMontoCargos());
+        return getOperado().subtract(getCargos());
     }
 }

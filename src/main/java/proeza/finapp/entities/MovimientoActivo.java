@@ -50,14 +50,14 @@ public class MovimientoActivo extends IdEntity<Long> {
     @Column(nullable = false)
     private Integer cantidad;
 
-    @Column(nullable = false, scale = 2, precision = 10)
+    @Column(nullable = false, scale = 3, precision = 10)
     private BigDecimal precio;
 
     @Column(nullable = false)
     private LocalDateTime fecha;
 
-    @Column(scale = 2, precision = 10)
-    private BigDecimal montoCargos;
+    @Column(scale = 3, precision = 10)
+    private BigDecimal cargos;
 
     @JsonIgnore
     @OneToMany(mappedBy = "movimiento", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -68,11 +68,11 @@ public class MovimientoActivo extends IdEntity<Long> {
     }
 
     public BigDecimal getTotalMovimiento() {
-        return montoCargos.add(getOperado());
+        return cargos.add(getOperado());
     }
 
     public void addCargo(Cargo c, BigDecimal monto) {
-        montoCargos = montoCargos == null ? monto : montoCargos.add(monto);
+        cargos = cargos == null ? monto : cargos.add(monto);
         CargoMovimiento cm = new CargoMovimiento();
         cm.setCargo(c);
         cm.setMovimiento(this);
