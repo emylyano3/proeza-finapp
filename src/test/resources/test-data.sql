@@ -3,7 +3,7 @@ insert into fin_mercado (id, nombre, codigo, pais_id) values (1, 'BCBA','BCBA',1
 insert into fin_instrumento (id, nombre, ticker, precio, mercado_id) values (1, 'YPF', 'YPFD', 610.5, 1);
 insert into fin_broker (id, codigo, nombre) values (1, 'IOL','Invertir Online');
 insert into fin_cuenta (id, saldo) values (1, 3895);
-insert into fin_cartera (id, broker_id, cuenta_id, nombre) values (1, 1, 1, 'Hold');
+insert into fin_cartera (id, broker_id, cuenta_id) values (1, 1, 1);
 insert into fin_activo (id, cartera_id, instrumento_id, ppc, tenencia) values (1, 1, 1, 610.50, 10);
 
 insert into fin_cargo (id, iva, tasa, tipo, broker_id) values (1, 0.21, 0.000799, 'D', 1);
