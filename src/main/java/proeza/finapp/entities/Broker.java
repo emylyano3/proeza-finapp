@@ -14,7 +14,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "cargos")
 @Entity(name = "fin_Broker")
 @Table(name = "fin_broker")
 public class Broker extends IdEntity<Long> {

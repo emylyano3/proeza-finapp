@@ -25,7 +25,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
+@ToString(exclude = {"cartera", "ventas", "compras"})
 @Entity(name = "fin_Activo")
 @Table(name = "fin_activo", indexes = {
         @Index(columnList = "cartera_id"),
@@ -89,7 +89,6 @@ public class Activo extends IdEntity<Long> {
 
     @Transient
     private void imputarCompra(Compra compra) {
-        compras.add(compra);
         int cantidad = 0;
         double volumen = 0;
         for (Compra c : compras) {

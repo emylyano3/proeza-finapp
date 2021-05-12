@@ -19,7 +19,7 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "activos")
 @Entity(name = "fin_Cartera")
 @Table(name = "fin_cartera", indexes = {@Index(columnList = "broker_id")})
 public class Cartera extends IdEntity<Long> {

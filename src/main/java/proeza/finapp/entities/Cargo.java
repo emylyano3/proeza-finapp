@@ -1,6 +1,7 @@
 package proeza.finapp.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -16,7 +17,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "broker")
 @Entity(name = "fin_Cargo")
 @Table(name = "fin_cargo", indexes = {@Index(columnList = "broker_id")})
 public class Cargo extends IdEntity<Long> {
@@ -48,6 +49,7 @@ public class Cargo extends IdEntity<Long> {
      * Ejemplo: monto * tasaAplicable = total
      */
     @Transient
+    @JsonIgnore
     public double getTasaAplicable() {
         return 1 + (1 + iva.doubleValue()) * tasa.doubleValue();
     }

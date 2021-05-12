@@ -1,5 +1,6 @@
 package proeza.finapp.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.DiscriminatorValue;
@@ -14,6 +15,7 @@ public class Venta extends MovimientoActivo {
     /**
      * @return el monto operado quitando los cargos del movimiento
      */
+    @JsonIgnore
     public BigDecimal getMontoNeto () {
         return getOperado().subtract(getCargos());
     }

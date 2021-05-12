@@ -16,7 +16,6 @@ import proeza.finapp.repository.CarteraRepository;
 import proeza.finapp.repository.InstrumentoRepository;
 
 import javax.transaction.Transactional;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
@@ -52,7 +51,7 @@ public class CarteraService {
         //TODO Agregar en el broker un flag para saber si aplica o no la exencion de cargo en movs intradiarios
         cartera.getBroker().getCargos().forEach(c -> {
             double totalCargo = (c.getTasaAplicable() - 1) * venta.getOperado().doubleValue();
-            venta.addCargo(c, BigDecimal.valueOf(totalCargo));
+            venta.addCargo(c, totalCargo);
         });
         venta.setActivo(activo);
         venta.setCartera(cartera);
@@ -85,7 +84,7 @@ public class CarteraService {
         Activo activo = opActivo.orElse(new Activo(cartera, instrumento));
         cartera.getBroker().getCargos().forEach(c -> {
             double totalCargo = (c.getTasaAplicable() - 1) * compra.getOperado().doubleValue();
-            compra.addCargo(c, BigDecimal.valueOf(totalCargo));
+            compra.addCargo(c, totalCargo);
         });
         compra.setActivo(activo);
         compra.setCartera(cartera);

@@ -18,13 +18,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"detalleCargos", "instrumento", "cartera"})
 @Entity(name = "fin_MovimientoActivo")
 @Table(name = "fin_movimiento_activo", indexes = {
         @Index(columnList = "cartera_id"),
@@ -63,20 +64,23 @@ public class MovimientoActivo extends IdEntity<Long> {
     @OneToMany(mappedBy = "movimiento", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<CargoMovimiento> detalleCargos = new HashSet<>();
 
+    @JsonIgnore
     public BigDecimal getOperado() {
         return BigDecimal.valueOf(precio.doubleValue() * cantidad);
     }
 
+    @JsonIgnore
     public BigDecimal getTotalMovimiento() {
         return cargos.add(getOperado());
     }
 
-    public void addCargo(Cargo c, BigDecimal monto) {
-        cargos = cargos == null ? monto : cargos.add(monto);
+    public void addCargo(Cargo c, double monto) {
+        BigDecimal toAdd = BigDecimal.valueOf(monto).setScale(3, RoundingMode.CEILING);
+        cargos = cargos == null ? toAdd : cargos.add(toAdd);
         CargoMovimiento cm = new CargoMovimiento();
         cm.setCargo(c);
         cm.setMovimiento(this);
-        cm.setMonto(monto);
+        cm.setMonto(toAdd);
         detalleCargos.add(cm);
     }
 }

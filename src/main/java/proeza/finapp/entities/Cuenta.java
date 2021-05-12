@@ -3,6 +3,7 @@ package proeza.finapp.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,11 +17,12 @@ import java.util.List;
 
 @Getter
 @Setter
+@ToString(exclude = {"movimientosCuenta", "carteras"})
 @Entity(name = "fin_Cuenta")
 @Table(name = "fin_cuenta")
 public class Cuenta extends IdEntity<Long> {
 
-    @Column(nullable = false, scale = 2, precision = 10)
+    @Column(nullable = false, scale = 3, precision = 10)
     private BigDecimal saldo;
 
     @JsonIgnore
