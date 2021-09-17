@@ -48,7 +48,8 @@ public class CarteraIT {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.broker.codigo", is("IOL")));
+                .andExpect(jsonPath("$.broker.codigo", is("IOL")))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -63,7 +64,8 @@ public class CarteraIT {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.saldo", is(4852.16)));
+                .andExpect(jsonPath("$.saldo", is(4852.16)))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -78,7 +80,8 @@ public class CarteraIT {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.saldo", is(2852.16)));
+                .andExpect(jsonPath("$.saldo", is(2852.16)))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -104,7 +107,8 @@ public class CarteraIT {
                 .andExpect(jsonPath("$.cuenta.saldo", is(831.108)))
                 .andExpect(jsonPath("$.activos", notNullValue()))
                 .andExpect(jsonPath("$.activos", hasSize(1)))
-                .andExpect(jsonPath("$.activos[0].ppc", is(607.0)));
+                .andExpect(jsonPath("$.activos[0].ppc", is(607.0)))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -130,7 +134,8 @@ public class CarteraIT {
                 .andExpect(jsonPath("$.cuenta.saldo", is(7327.6)))
                 .andExpect(jsonPath("$.activos", notNullValue()))
                 .andExpect(jsonPath("$.activos", hasSize(1)))
-                .andExpect(jsonPath("$.activos[0].ppc", is(610.5)));
+                .andExpect(jsonPath("$.activos[0].ppc", is(610.5)))
+                .andExpect(status().isOk());
     }
 
     protected ObjectMapper getObjectMapper() {
