@@ -1,15 +1,12 @@
 spring:
-    datasource:
-        url: jdbc:postgresql://localhost:5432/finapp?createDatabaseIfNotExist=true
-        password: postgres
-        username: postgres
+  datasource:
+    url: jdbc:postgresql://localhost:5432/finapp
+    password: postgres
+    username: postgres
+  jpa:
+    hibernate.ddl-auto: update
 
 javax:
-    persistence:
-        schema-generation:
-            database:
-                action: none
-                create-source: metadata
-            scripts:
-                action: none
-                create-source: metadata
+  persistence:
+    schema-generation:
+      create-source: metadata
