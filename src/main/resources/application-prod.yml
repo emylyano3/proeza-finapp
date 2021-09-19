@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    password: root
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/finapp?createDatabaseIfNotExist=true
+    username: root
+
+javax:
+  persistence:
+    schema-generation:
+      database:
+        action: none
+        create-source: metadata
+      scripts:
+        action: none
+        create-source: metadata

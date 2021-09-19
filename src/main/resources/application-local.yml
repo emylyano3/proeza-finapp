@@ -1,0 +1,15 @@
+spring:
+    datasource:
+        url: jdbc:postgresql://localhost:5432/finapp?createDatabaseIfNotExist=true
+        password: postgres
+        username: postgres
+
+javax:
+    persistence:
+        schema-generation:
+            database:
+                action: none
+                create-source: metadata
+            scripts:
+                action: none
+                create-source: metadata

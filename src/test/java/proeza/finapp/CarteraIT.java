@@ -8,33 +8,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
-import proeza.finapp.entities.Cartera;
-import proeza.finapp.entities.Compra;
-import proeza.finapp.entities.Cuenta;
-import proeza.finapp.entities.Deposito;
-import proeza.finapp.entities.Extraccion;
-import proeza.finapp.entities.Instrumento;
-import proeza.finapp.entities.Venta;
+import proeza.finapp.entities.*;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Transactional
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-h2_integration_test.properties")
+@ActiveProfiles("integration_test")
 @Sql(scripts = {"/test-data.sql"})
 public class CarteraIT {
 
