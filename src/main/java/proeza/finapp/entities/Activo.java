@@ -21,6 +21,7 @@ import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -72,8 +73,10 @@ public class Activo extends IdEntity<Long> {
      */
     @Transient
     public void addCompra(Compra compra) {
-        compras.add(compra);
-        imputarCompra(compra);
+        if (compra != null && compras.stream().noneMatch(c -> Objects.equals(c, compra))) {
+            compras.add(compra);
+            imputarCompra(compra);
+        }
     }
 
     /**
@@ -83,8 +86,10 @@ public class Activo extends IdEntity<Long> {
      */
     @Transient
     public void addVenta(Venta venta) {
-        ventas.add(venta);
-        imputarVenta(venta);
+        if (venta != null && ventas.stream().noneMatch(v -> Objects.equals(v, venta))) {
+            ventas.add(venta);
+            imputarVenta(venta);
+        }
     }
 
     @Transient

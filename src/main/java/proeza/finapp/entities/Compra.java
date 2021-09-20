@@ -9,4 +9,9 @@ import javax.persistence.Entity;
 @DiscriminatorValue("C")
 @Entity(name = "fin_Compra")
 public class Compra extends MovimientoActivo {
+
+    public void setActivo (Activo activo) {
+        super.setActivo(activo);
+        getActivo().addCompra(this);
+    }
 }

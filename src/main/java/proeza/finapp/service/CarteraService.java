@@ -2,18 +2,12 @@ package proeza.finapp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import proeza.finapp.entities.Activo;
-import proeza.finapp.entities.Cartera;
-import proeza.finapp.entities.Compra;
-import proeza.finapp.entities.Cuenta;
-import proeza.finapp.entities.Deposito;
-import proeza.finapp.entities.Extraccion;
-import proeza.finapp.entities.Instrumento;
-import proeza.finapp.entities.Venta;
-import proeza.finapp.exception.EntityNotFoundException;
-import proeza.finapp.repository.ActivoRepository;
+import proeza.finapp.entities.*;
 import proeza.finapp.repository.CarteraRepository;
-import proeza.finapp.repository.InstrumentoRepository;
+import proeza.finapp.rest.dto.CompraDTO;
+import proeza.finapp.rest.dto.VentaDTO;
+import proeza.finapp.rest.translator.CompraTranslator;
+import proeza.finapp.rest.translator.VentaTranslator;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -25,41 +19,38 @@ import java.util.Optional;
 public class CarteraService {
 
     @Autowired
+    private VentaTranslator translator;
+
+    @Autowired
+    private CompraTranslator compraTranslator;
+
+    @Autowired
     private CarteraRepository carteraRepository;
 
-    @Autowired
-    private ActivoRepository activoRepository;
+    public Cartera crear(Cartera cartera) {
+        Objects.requireNonNull(cartera);
+        boolean exists = Optional.ofNullable(cartera.getId())
+                .map(carteraRepository::findById)
+                .isPresent();
+        return exists ? cartera : carteraRepository.save(cartera);
+    }
 
-    @Autowired
-    private InstrumentoRepository instrumentoRepository;
-
-    public Cartera venta(Venta venta) {
-        Objects.requireNonNull(venta);
-        Objects.requireNonNull(venta.getCartera());
-        Objects.requireNonNull(venta.getCartera().getId());
-        Objects.requireNonNull(venta.getInstrumento());
-        Objects.requireNonNull(venta.getInstrumento().getId());
-        Objects.requireNonNull(venta.getCantidad());
-        Objects.requireNonNull(venta.getPrecio());
-        Optional<Cartera> opCartera = carteraRepository.findById(venta.getCartera().getId());
-        Cartera cartera = opCartera.orElseThrow(() -> entityNotFoundException(Cartera.class.getSimpleName(), venta.getCartera().getId()));
-        Optional<Instrumento> opInstrumento = instrumentoRepository.findById(venta.getInstrumento().getId());
-        Instrumento instrumento = opInstrumento.orElseThrow(() -> entityNotFoundException(Instrumento.class.getSimpleName(), venta.getInstrumento().getId()));
-        Optional<Activo> opActivo = activoRepository.findByCarteraAndInstrumento(cartera, instrumento);
-        Activo activo = opActivo.orElse(new Activo(cartera, instrumento));
+    public Cartera venta(VentaDTO ventaDTO) {
+        //TODO Validar con annotations
+        Objects.requireNonNull(ventaDTO);
+        Objects.requireNonNull(ventaDTO.getIdCartera());
+        Objects.requireNonNull(ventaDTO.getTicker());
+        Objects.requireNonNull(ventaDTO.getCantidad());
+        Objects.requireNonNull(ventaDTO.getPrecio());
         //TODO Verificar si es un movimiento intradiario para aplicar o no los nuevos cargos.
         //TODO Agregar en el broker un flag para saber si aplica o no la exencion de cargo en movs intradiarios
-        cartera.getBroker().getCargos().forEach(c -> {
+        Venta venta = translator.toDomain(ventaDTO);
+        venta.getCartera().getBroker().getCargos().forEach(c -> {
             double totalCargo = (c.getTasaAplicable() - 1) * venta.getOperado().doubleValue();
             venta.addCargo(c, totalCargo);
         });
-        venta.setActivo(activo);
-        venta.setCartera(cartera);
-        venta.setInstrumento(instrumento);
-        venta.setFecha(LocalDateTime.now());
-        activo.addVenta(venta);
-        cartera.update(activo);
-        Cuenta cuenta = cartera.getCuenta();
+        venta.getCartera().update(venta.getActivo());
+        Cuenta cuenta = venta.getCartera().getCuenta();
         Deposito deposito = new Deposito();
         deposito.setCuenta(cuenta);
         deposito.setFecha(LocalDateTime.now());
@@ -68,40 +59,24 @@ public class CarteraService {
         return venta.getCartera();
     }
 
-    public Cartera compra(Compra compra) {
-        Objects.requireNonNull(compra);
-        Objects.requireNonNull(compra.getCartera());
-        Objects.requireNonNull(compra.getCartera().getId());
-        Objects.requireNonNull(compra.getInstrumento());
-        Objects.requireNonNull(compra.getInstrumento().getId());
-        Objects.requireNonNull(compra.getCantidad());
-        Objects.requireNonNull(compra.getPrecio());
-        Optional<Cartera> opCartera = carteraRepository.findById(compra.getCartera().getId());
-        Cartera cartera = opCartera.orElseThrow(() -> entityNotFoundException(Cartera.class.getSimpleName(), compra.getCartera().getId()));
-        Optional<Instrumento> opInstrumento = instrumentoRepository.findById(compra.getInstrumento().getId());
-        Instrumento instrumento = opInstrumento.orElseThrow(() -> entityNotFoundException(Instrumento.class.getSimpleName(), compra.getInstrumento().getId()));
-        Optional<Activo> opActivo = activoRepository.findByCarteraAndInstrumento(cartera, instrumento);
-        Activo activo = opActivo.orElse(new Activo(cartera, instrumento));
-        cartera.getBroker().getCargos().forEach(c -> {
+    public Cartera compra(CompraDTO compraDTO) {
+        Objects.requireNonNull(compraDTO);
+        Objects.requireNonNull(compraDTO.getIdCartera());
+        Objects.requireNonNull(compraDTO.getTicker());
+        Objects.requireNonNull(compraDTO.getCantidad());
+        Objects.requireNonNull(compraDTO.getPrecio());
+        Compra compra = compraTranslator.toDomain(compraDTO);
+        compra.getCartera().getBroker().getCargos().forEach(c -> {
             double totalCargo = (c.getTasaAplicable() - 1) * compra.getOperado().doubleValue();
             compra.addCargo(c, totalCargo);
         });
-        compra.setActivo(activo);
-        compra.setCartera(cartera);
-        compra.setInstrumento(instrumento);
-        compra.setFecha(LocalDateTime.now());
-        activo.addCompra(compra);
-        cartera.update(activo);
-        Cuenta cuenta = cartera.getCuenta();
+        compra.getCartera().update(compra.getActivo());
+        Cuenta cuenta = compra.getCartera().getCuenta();
         Extraccion extraccion = new Extraccion();
         extraccion.setCuenta(cuenta);
         extraccion.setFecha(LocalDateTime.now());
         extraccion.setMonto(compra.getTotalMovimiento());
         cuenta.addExtraccion(extraccion);
         return compra.getCartera();
-    }
-
-    protected EntityNotFoundException entityNotFoundException(String entityName, Long id) {
-        return new EntityNotFoundException(String.format("No se encontro la entidad %s con id %s", entityName, id));
     }
 }

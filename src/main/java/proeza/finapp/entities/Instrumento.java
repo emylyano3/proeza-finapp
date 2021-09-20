@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @Entity(name = "fin_Instrumento")
-@Table(name = "fin_instrumento", indexes = {@Index(columnList = "mercado_id")})
+@Table(name = "fin_instrumento", indexes = {@Index(columnList = "mercado_id"),@Index(columnList = "ticker")})
 public class Instrumento extends IdEntity<Long> {
     @Column(nullable = false, length = 128, unique = true)
     private String nombre;

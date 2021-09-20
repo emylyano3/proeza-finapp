@@ -11,7 +11,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
-import proeza.finapp.entities.*;
+import proeza.finapp.entities.Cuenta;
+import proeza.finapp.entities.Deposito;
+import proeza.finapp.entities.Extraccion;
+import proeza.finapp.rest.dto.CompraDTO;
+import proeza.finapp.rest.dto.VentaDTO;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
@@ -76,17 +80,13 @@ public class CarteraIT {
 
     @Test
     public void cuandoHagoUnaCompra_entoncesSeActualizaLaCarteraElActivoYSeExtraeElMontoOperadoDeLaCuenta() throws Exception {
-        Cartera cartera = new Cartera();
-        cartera.setId(1L);
-        Instrumento instrumento = new Instrumento();
-        instrumento.setId(1L);
-        Compra compra = new Compra();
-        compra.setCartera(cartera);
+        CompraDTO compra = new CompraDTO();
+        compra.setIdCartera(1L);
+        compra.setTicker("YPFD");
         compra.setPrecio(BigDecimal.valueOf(600));
         compra.setCantidad(5);
-        compra.setInstrumento(instrumento);
         this.mockMvc
-                .perform(post("/api/cartera/compra")
+                .perform(post("/api/cartera/1/compra")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getObjectMapper().writeValueAsBytes(compra)))
                 .andExpect(status().isOk())
@@ -101,19 +101,16 @@ public class CarteraIT {
                 .andExpect(status().isOk());
     }
 
+
     @Test
     public void cuandoHagoUnaVenta_entoncesSeActualizaLaCarteraElActivoYSeDepositaElMontoOperadoEnLaCuenta() throws Exception {
-        Cartera cartera = new Cartera();
-        cartera.setId(1L);
-        Instrumento instrumento = new Instrumento();
-        instrumento.setId(1L);
-        Venta venta = new Venta();
-        venta.setCartera(cartera);
+        VentaDTO venta = new VentaDTO();
+        venta.setIdCartera(1L);
+        venta.setTicker("YPFD");
         venta.setPrecio(BigDecimal.valueOf(700));
         venta.setCantidad(5);
-        venta.setInstrumento(instrumento);
         this.mockMvc
-                .perform(post("/api/cartera/venta")
+                .perform(post("/api/cartera/1/venta")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getObjectMapper().writeValueAsBytes(venta)))
                 .andExpect(status().isOk())

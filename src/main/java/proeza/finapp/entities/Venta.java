@@ -19,4 +19,9 @@ public class Venta extends MovimientoActivo {
     public BigDecimal getMontoNeto () {
         return getOperado().subtract(getCargos());
     }
+
+    public void setActivo (Activo activo) {
+        super.setActivo(activo);
+        getActivo().addVenta(this);
+    }
 }
