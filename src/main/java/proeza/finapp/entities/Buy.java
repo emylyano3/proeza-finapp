@@ -8,10 +8,10 @@ import javax.persistence.Entity;
 @NoArgsConstructor
 @DiscriminatorValue("C")
 @Entity(name = "fin_Compra")
-public class Compra extends MovimientoActivo {
+public class Buy extends AssetMovement {
 
-    public void setActivo (Activo activo) {
-        super.setActivo(activo);
-        getActivo().addCompra(this);
+    public void setAsset(Asset asset) {
+        super.setAsset(asset);
+        getAsset().addBuy(this);
     }
 }

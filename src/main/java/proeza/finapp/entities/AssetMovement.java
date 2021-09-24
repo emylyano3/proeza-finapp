@@ -25,7 +25,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-@ToString(exclude = {"detalleCargos", "instrumento", "cartera"})
+@ToString(exclude = {"chargeDetails", "instrument", "portfolio"})
 @Entity(name = "fin_MovimientoActivo")
 @Table(name = "fin_movimiento_activo", indexes = {
         @Index(columnList = "cartera_id"),
@@ -34,53 +34,53 @@ import java.util.Set;
 })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "tipo", length = 1)
-public class MovimientoActivo extends IdEntity<Long> {
+public class AssetMovement extends IdEntity<Long> {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "cartera_id", referencedColumnName = "id")
-    private Cartera cartera;
+    private Portfolio portfolio;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "activo_id", referencedColumnName = "id")
-    private Activo activo;
+    private Asset asset;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "instrumento_id", referencedColumnName = "id")
-    private Instrumento instrumento;
+    private Instrument instrument;
 
-    @Column(nullable = false)
-    private Integer cantidad;
+    @Column(name="cantidad", nullable = false)
+    private Integer quantity;
 
-    @Column(nullable = false, scale = 3, precision = 10)
-    private BigDecimal precio;
+    @Column(name="precio", nullable = false, scale = 3, precision = 10)
+    private BigDecimal price;
 
-    @Column(nullable = false)
-    private LocalDateTime fecha;
+    @Column(name="fecha", nullable = false)
+    private LocalDateTime date;
 
-    @Column(scale = 3, precision = 10)
-    private BigDecimal cargos;
+    @Column(name="cargos", scale = 3, precision = 10)
+    private BigDecimal charges;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "movimiento", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<CargoMovimiento> detalleCargos = new HashSet<>();
+    @OneToMany(mappedBy = "movement", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<MovementCharge> chargeDetails = new HashSet<>();
 
     @JsonIgnore
     public BigDecimal getOperado() {
-        return BigDecimal.valueOf(precio.doubleValue() * cantidad);
+        return BigDecimal.valueOf(price.doubleValue() * quantity);
     }
 
     @JsonIgnore
-    public BigDecimal getTotalMovimiento() {
-        return cargos.add(getOperado());
+    public BigDecimal getMovementTotal() {
+        return charges.add(getOperado());
     }
 
-    public void addCargo(Cargo c, double monto) {
+    public void addCargo(Charge c, double monto) {
         BigDecimal toAdd = BigDecimal.valueOf(monto).setScale(3, RoundingMode.CEILING);
-        cargos = cargos == null ? toAdd : cargos.add(toAdd);
-        CargoMovimiento cm = new CargoMovimiento();
-        cm.setCargo(c);
-        cm.setMovimiento(this);
-        cm.setMonto(toAdd);
-        detalleCargos.add(cm);
+        charges = charges == null ? toAdd : charges.add(toAdd);
+        MovementCharge cm = new MovementCharge();
+        cm.setCharge(c);
+        cm.setMovement(this);
+        cm.setAmount(toAdd);
+        chargeDetails.add(cm);
     }
 }

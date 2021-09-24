@@ -17,7 +17,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@ToString(exclude = {"movimientosCuenta"})
+@ToString(exclude = {"movements"})
 @Entity(name = "fin_Cuenta")
 @Table(name = "fin_cuenta")
 public class Account extends IdEntity<Long> {
@@ -30,16 +30,16 @@ public class Account extends IdEntity<Long> {
 
     @JsonIgnore
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
-    private List<MovimientoCuenta> movimientosCuenta = new ArrayList<>(0);
+    private List<AccountMovement> movements = new ArrayList<>(0);
 
     @Transient
-    public void acreditar(BigDecimal monto) {
-        balance = balance.add(monto);
+    public void credit(BigDecimal amount) {
+        balance = balance.add(amount);
     }
 
     @Transient
-    public void debitar(BigDecimal monto) {
-        balance = balance.subtract(monto);
+    public void debit(BigDecimal amount) {
+        balance = balance.subtract(amount);
     }
 
     /**
@@ -49,8 +49,8 @@ public class Account extends IdEntity<Long> {
      */
     @Transient
     public void addDeposito(Deposit deposit) {
-        movimientosCuenta.add(deposit);
-        acreditar(deposit.getMonto());
+        movements.add(deposit);
+        credit(deposit.getAmount());
     }
 
     /**
@@ -60,7 +60,7 @@ public class Account extends IdEntity<Long> {
      */
     @Transient
     public void addExtraccion(Withdrawal withdrawal) {
-        movimientosCuenta.add(withdrawal);
-        debitar(withdrawal.getMonto());
+        movements.add(withdrawal);
+        debit(withdrawal.getAmount());
     }
 }

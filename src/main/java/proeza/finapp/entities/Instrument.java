@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @ToString
 @Entity(name = "fin_Instrumento")
 @Table(name = "fin_instrumento", indexes = {@Index(columnList = "mercado_id"),@Index(columnList = "ticker")})
-public class Instrumento extends IdEntity<Long> {
+public class Instrument extends IdEntity<Long> {
     @Column(nullable = false, length = 128, unique = true)
     private String nombre;
 
@@ -27,7 +27,7 @@ public class Instrumento extends IdEntity<Long> {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "mercado_id", referencedColumnName = "id")
-    private Mercado mercado;
+    private Market mercado;
 
     @Column
     private BigDecimal precio;

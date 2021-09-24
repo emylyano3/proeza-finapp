@@ -52,11 +52,11 @@ public class AccountService {
         Objects.requireNonNull(deposit);
         Objects.requireNonNull(deposit.getAccount());
         Objects.requireNonNull(deposit.getAccount().getNumber());
-        Objects.requireNonNull(deposit.getMonto());
+        Objects.requireNonNull(deposit.getAmount());
         Account account = findByNumber(deposit.getAccount().getNumber());
-        deposit.setFecha(deposit.getFecha() == null
+        deposit.setDate(deposit.getDate() == null
                 ? LocalDateTime.now()
-                : deposit.getFecha());
+                : deposit.getDate());
         deposit.setAccount(account);
         account.addDeposito(deposit);
         return account;
@@ -66,11 +66,11 @@ public class AccountService {
         Objects.requireNonNull(withdrawal);
         Objects.requireNonNull(withdrawal.getAccount());
         Objects.requireNonNull(withdrawal.getAccount().getNumber());
-        Objects.requireNonNull(withdrawal.getMonto());
+        Objects.requireNonNull(withdrawal.getAmount());
         Account account = findByNumber(withdrawal.getAccount().getNumber());
-        withdrawal.setFecha(withdrawal.getFecha() == null
+        withdrawal.setDate(withdrawal.getDate() == null
                 ? LocalDateTime.now()
-                : withdrawal.getFecha());
+                : withdrawal.getDate());
         withdrawal.setAccount(account);
         account.addExtraccion(withdrawal);
         return account;

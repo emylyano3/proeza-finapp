@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @ToString(exclude = "broker")
 @Entity(name = "fin_Cargo")
 @Table(name = "fin_cargo", indexes = {@Index(columnList = "broker_id")})
-public class Cargo extends IdEntity<Long> {
+public class Charge extends IdEntity<Long> {
 
     @ManyToOne
     @JsonBackReference
@@ -31,11 +31,11 @@ public class Cargo extends IdEntity<Long> {
     @Column(scale = 6, precision = 6)
     private BigDecimal iva;
 
-    public TipoCargo getTipo() {
-        return tipo == null ? null : TipoCargo.fromId(tipo);
+    public ChargeType getTipo() {
+        return tipo == null ? null : ChargeType.fromId(tipo);
     }
 
-    public void setTipo(TipoCargo tipo) {
+    public void setTipo(ChargeType tipo) {
         this.tipo = tipo == null ? null : tipo.getId();
     }
 

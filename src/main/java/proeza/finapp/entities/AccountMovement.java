@@ -29,15 +29,15 @@ import java.time.LocalDateTime;
 })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "tipo", length = 1)
-public abstract class MovimientoCuenta extends IdEntity<Long> {
+public abstract class AccountMovement extends IdEntity<Long> {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "cuenta_id", referencedColumnName = "id")
     private Account account;
 
-    @Column(nullable = false, scale = 3, precision = 10)
-    private BigDecimal monto;
+    @Column(name="monto", nullable = false, scale = 3, precision = 10)
+    private BigDecimal amount;
 
-    @Column(nullable = false)
-    private LocalDateTime fecha;
+    @Column(name="fecha", nullable = false)
+    private LocalDateTime date;
 }

@@ -2,11 +2,11 @@ package proeza.finapp.rest.translator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import proeza.finapp.entities.Activo;
-import proeza.finapp.entities.Venta;
-import proeza.finapp.repository.ActivoRepository;
-import proeza.finapp.repository.CarteraRepository;
-import proeza.finapp.repository.InstrumentoRepository;
+import proeza.finapp.entities.Asset;
+import proeza.finapp.entities.Sale;
+import proeza.finapp.repository.AssetRepository;
+import proeza.finapp.repository.PortfolioRepository;
+import proeza.finapp.repository.InstrumentRepository;
 import proeza.finapp.rest.dto.VentaDTO;
 
 import java.time.LocalDateTime;
@@ -15,23 +15,23 @@ import java.time.LocalDateTime;
 public class VentaTranslator {
 
     @Autowired
-    private CarteraRepository carteraRepository;
+    private PortfolioRepository portfolioRepository;
     @Autowired
-    private InstrumentoRepository instrumentoRepository;
+    private InstrumentRepository instrumentRepository;
     @Autowired
-    private ActivoRepository activoRepository;
+    private AssetRepository assetRepository;
 
-    public Venta toDomain(VentaDTO ventaDTO) {
-        Venta venta = new Venta();
-        venta.setCantidad(ventaDTO.getCantidad());
-        venta.setPrecio(ventaDTO.getPrecio());
-        venta.setFecha(ventaDTO.getFecha());
-        venta.setCartera(carteraRepository.findById(ventaDTO.getIdCartera()).orElseThrow());
-        venta.setInstrumento(instrumentoRepository.findByTicker(ventaDTO.getTicker()).orElseThrow());
-        Activo activo = activoRepository.findByCarteraAndInstrumento(venta.getCartera(), venta.getInstrumento())
-                                        .orElse(new Activo(venta.getCartera(), venta.getInstrumento()));
-        venta.setActivo(activo);
-        venta.setFecha(ventaDTO.getFecha() == null ? LocalDateTime.now() : ventaDTO.getFecha());
-        return venta;
+    public Sale toDomain(VentaDTO ventaDTO) {
+        Sale sale = new Sale();
+        sale.setQuantity(ventaDTO.getCantidad());
+        sale.setPrice(ventaDTO.getPrecio());
+        sale.setDate(ventaDTO.getFecha());
+        sale.setPortfolio(portfolioRepository.findById(ventaDTO.getIdCartera()).orElseThrow());
+        sale.setInstrument(instrumentRepository.findByTicker(ventaDTO.getTicker()).orElseThrow());
+        Asset asset = assetRepository.findByPortfolioAndInstrument(sale.getPortfolio(), sale.getInstrument())
+                                     .orElse(new Asset(sale.getPortfolio(), sale.getInstrument()));
+        sale.setAsset(asset);
+        sale.setDate(ventaDTO.getFecha() == null ? LocalDateTime.now() : ventaDTO.getFecha());
+        return sale;
     }
 }

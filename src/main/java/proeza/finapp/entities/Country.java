@@ -13,7 +13,7 @@ import javax.persistence.Table;
 @ToString
 @Entity(name = "fin_Pais")
 @Table(name = "fin_pais")
-public class Pais extends IdEntity<Long> {
+public class Country extends IdEntity<Long> {
     @Column(nullable = false, unique = true)
     private String nombre;
 

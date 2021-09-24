@@ -5,7 +5,7 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import proeza.finapp.entities.Broker;
 import proeza.finapp.repository.BrokerRepository;
-import proeza.finapp.repository.CargoRepository;
+import proeza.finapp.repository.ChargeRepository;
 
 import javax.transaction.Transactional;
 import java.util.Objects;
@@ -18,7 +18,7 @@ public class BrokerService {
     private BrokerRepository brokerRepo;
 
     @Autowired
-    private CargoRepository cargoRepo;
+    private ChargeRepository cargoRepo;
 
     public Broker findById(Long id) {
         return this.brokerRepo.findById(id).orElseThrow(this::brokerNotFound);
@@ -35,7 +35,7 @@ public class BrokerService {
         if (exists) {
             return broker;
         } else {
-            broker.getCargos().forEach(c -> c.setBroker(broker));
+            broker.getCharges().forEach(c -> c.setBroker(broker));
             return this.brokerRepo.save(broker);
         }
     }
@@ -48,10 +48,10 @@ public class BrokerService {
         Optional.ofNullable(id)
                 .flatMap(_id -> this.brokerRepo.findById(_id))
                 .ifPresent(b -> {
-                    cargoRepo.deleteAll(b.getCargos());
-                    b.getCargos().clear();
+                    cargoRepo.deleteAll(b.getCharges());
+                    b.getCharges().clear();
                     this.brokerRepo.saveAndFlush(b);
-                    broker.getCargos().forEach(c -> c.setBroker(broker)                    );
+                    broker.getCharges().forEach(c -> c.setBroker(broker)                    );
                     this.brokerRepo.save(broker);
                 });
     }

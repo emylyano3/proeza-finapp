@@ -2,13 +2,13 @@ package proeza.finapp.rest.translator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import proeza.finapp.entities.Activo;
-import proeza.finapp.entities.Cartera;
-import proeza.finapp.entities.Compra;
-import proeza.finapp.entities.Instrumento;
-import proeza.finapp.repository.ActivoRepository;
-import proeza.finapp.repository.CarteraRepository;
-import proeza.finapp.repository.InstrumentoRepository;
+import proeza.finapp.entities.Asset;
+import proeza.finapp.entities.Portfolio;
+import proeza.finapp.entities.Buy;
+import proeza.finapp.entities.Instrument;
+import proeza.finapp.repository.AssetRepository;
+import proeza.finapp.repository.PortfolioRepository;
+import proeza.finapp.repository.InstrumentRepository;
 import proeza.finapp.rest.dto.CompraDTO;
 
 import java.time.LocalDateTime;
@@ -17,23 +17,23 @@ import java.time.LocalDateTime;
 public class CompraTranslator {
 
     @Autowired
-    private CarteraRepository carteraRepository;
+    private PortfolioRepository portfolioRepository;
     @Autowired
-    private InstrumentoRepository instrumentoRepository;
+    private InstrumentRepository instrumentRepository;
     @Autowired
-    private ActivoRepository activoRepository;
+    private AssetRepository assetRepository;
 
-    public Compra toDomain(CompraDTO compraDTO) {
-        Cartera cartera = carteraRepository.findById(compraDTO.getIdCartera()).orElseThrow();
-        Instrumento instrumento = instrumentoRepository.findByTicker(compraDTO.getTicker()).orElseThrow();
-        Activo activo = activoRepository.findByCarteraAndInstrumento(cartera, instrumento).orElse(new Activo(cartera, instrumento));
-        Compra compra = new Compra();
-        compra.setCantidad(compraDTO.getCantidad());
-        compra.setPrecio(compraDTO.getPrecio());
-        compra.setCartera(cartera);
-        compra.setInstrumento(instrumento);
-        compra.setActivo(activo);
-        compra.setFecha(compraDTO.getFecha() == null ? LocalDateTime.now() : compraDTO.getFecha());
-        return compra;
+    public Buy toDomain(CompraDTO compraDTO) {
+        Portfolio portfolio = portfolioRepository.findById(compraDTO.getIdCartera()).orElseThrow();
+        Instrument instrument = instrumentRepository.findByTicker(compraDTO.getTicker()).orElseThrow();
+        Asset asset = assetRepository.findByPortfolioAndInstrument(portfolio, instrument).orElse(new Asset(portfolio, instrument));
+        Buy buy = new Buy();
+        buy.setQuantity(compraDTO.getCantidad());
+        buy.setPrice(compraDTO.getPrecio());
+        buy.setPortfolio(portfolio);
+        buy.setInstrument(instrument);
+        buy.setAsset(asset);
+        buy.setDate(compraDTO.getFecha() == null ? LocalDateTime.now() : compraDTO.getFecha());
+        return buy;
     }
 }

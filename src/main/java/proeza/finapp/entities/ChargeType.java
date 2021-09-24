@@ -4,7 +4,7 @@ import org.springframework.lang.Nullable;
 
 import java.util.Arrays;
 
-public enum TipoCargo {
+public enum ChargeType {
     IMPUESTO("I"),
     COMISION("C"),
     DERECHO_MERCADO("D"),
@@ -12,7 +12,7 @@ public enum TipoCargo {
 
     private String id;
 
-    TipoCargo(String id) {
+    ChargeType(String id) {
         this.id = id;
     }
 
@@ -21,10 +21,10 @@ public enum TipoCargo {
     }
 
     @Nullable
-    public static TipoCargo fromId(String id) {
+    public static ChargeType fromId(String id) {
         return id == null
                 ? null
-                : Arrays.stream(TipoCargo.values())
+                : Arrays.stream(ChargeType.values())
                 .filter(tm -> id.equals(tm.getId()))
                 .findAny()
                 .orElse(null);

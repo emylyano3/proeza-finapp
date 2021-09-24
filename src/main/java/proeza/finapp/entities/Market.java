@@ -1,6 +1,5 @@
 package proeza.finapp.entities;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -17,7 +16,7 @@ import javax.persistence.Table;
 @ToString
 @Entity(name = "fin_Mercado")
 @Table(name = "fin_mercado", indexes = {@Index(columnList = "pais_id")})
-public class Mercado extends IdEntity<Long> {
+public class Market extends IdEntity<Long> {
     @Column(nullable = false, unique = true)
     private String codigo;
 
@@ -26,5 +25,5 @@ public class Mercado extends IdEntity<Long> {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "pais_id", referencedColumnName = "id")
-    private Pais pais;
+    private Country country;
 }

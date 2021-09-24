@@ -19,23 +19,23 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString(exclude = "movimiento")
+@ToString(exclude = "movement")
 @Entity(name = "fin_CargoMovimiento")
 @Table(name = "fin_cargo_movimiento", indexes = {
         @Index(columnList = "cargo_id"),
         @Index(columnList = "movimiento_id")
 })
-public class CargoMovimiento extends IdEntity<Long> {
+public class MovementCharge extends IdEntity<Long> {
 
     @ManyToOne
     @JoinColumn(name = "cargo_id", referencedColumnName = "id")
-    private Cargo cargo;
+    private Charge charge;
 
     @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "movimiento_id", referencedColumnName = "id")
-    private MovimientoActivo movimiento;
+    private AssetMovement movement;
 
-    @Column(nullable = false, scale = 3, precision = 10)
-    private BigDecimal monto;
+    @Column(name="monto", nullable = false, scale = 3, precision = 10)
+    private BigDecimal amount;
 }

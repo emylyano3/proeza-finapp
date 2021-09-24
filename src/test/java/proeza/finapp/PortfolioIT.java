@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("integration_test")
 @Sql(scripts = {"/test-data.sql"})
-public class CarteraIT {
+public class PortfolioIT {
 
     @Autowired
     protected MockMvc mockMvc;
@@ -97,9 +97,9 @@ public class CarteraIT {
                 .andExpect(jsonPath("$.account", notNullValue()))
                 .andExpect(jsonPath("$.account.id", is(1)))
                 .andExpect(jsonPath("$.account.balance", is(831.108)))
-                .andExpect(jsonPath("$.activos", notNullValue()))
-                .andExpect(jsonPath("$.activos", hasSize(1)))
-                .andExpect(jsonPath("$.activos[0].ppc", is(607.0)))
+                .andExpect(jsonPath("$.assets", notNullValue()))
+                .andExpect(jsonPath("$.assets", hasSize(1)))
+                .andExpect(jsonPath("$.assets[0].ppc", is(607.0)))
                 .andExpect(status().isOk());
     }
 
@@ -120,9 +120,9 @@ public class CarteraIT {
                 .andExpect(jsonPath("$.account", notNullValue()))
                 .andExpect(jsonPath("$.account.id", is(1)))
                 .andExpect(jsonPath("$.account.balance", is(7327.6)))
-                .andExpect(jsonPath("$.activos", notNullValue()))
-                .andExpect(jsonPath("$.activos", hasSize(1)))
-                .andExpect(jsonPath("$.activos[0].ppc", is(610.5)))
+                .andExpect(jsonPath("$.assets", notNullValue()))
+                .andExpect(jsonPath("$.assets", hasSize(1)))
+                .andExpect(jsonPath("$.assets[0].ppc", is(610.5)))
                 .andExpect(status().isOk());
     }
 

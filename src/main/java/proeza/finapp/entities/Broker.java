@@ -15,7 +15,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-@ToString(exclude = "cargos")
+@ToString(exclude = "charges")
 @Entity(name = "fin_Broker")
 @Table(name = "fin_broker")
 public class Broker extends IdEntity<Long> {
@@ -27,5 +27,5 @@ public class Broker extends IdEntity<Long> {
 
     @OneToMany(mappedBy = "broker")
     @Cascade(CascadeType.ALL)
-    private Set<Cargo> cargos = new HashSet<>();
+    private Set<Charge> charges = new HashSet<>();
 }

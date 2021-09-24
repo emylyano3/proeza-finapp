@@ -10,18 +10,18 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @DiscriminatorValue("V")
 @Entity(name = "fin_Venta")
-public class Venta extends MovimientoActivo {
+public class Sale extends AssetMovement {
 
     /**
      * @return el monto operado quitando los cargos del movimiento
      */
     @JsonIgnore
-    public BigDecimal getMontoNeto () {
-        return getOperado().subtract(getCargos());
+    public BigDecimal getNetAmount() {
+        return getOperado().subtract(getCharges());
     }
 
-    public void setActivo (Activo activo) {
-        super.setActivo(activo);
-        getActivo().addVenta(this);
+    public void setAsset(Asset asset) {
+        super.setAsset(asset);
+        getAsset().addSale(this);
     }
 }
