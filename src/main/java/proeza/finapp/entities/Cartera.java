@@ -29,7 +29,7 @@ public class Cartera extends IdEntity<Long> {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "cuenta_id", referencedColumnName = "id")
-    private Cuenta cuenta;
+    private Account account;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "cartera", fetch = FetchType.EAGER, cascade = CascadeType.ALL)

@@ -50,12 +50,12 @@ public class CarteraService {
             venta.addCargo(c, totalCargo);
         });
         venta.getCartera().update(venta.getActivo());
-        Cuenta cuenta = venta.getCartera().getCuenta();
-        Deposito deposito = new Deposito();
-        deposito.setCuenta(cuenta);
-        deposito.setFecha(LocalDateTime.now());
-        deposito.setMonto(venta.getMontoNeto());
-        cuenta.addDeposito(deposito);
+        Account account = venta.getCartera().getAccount();
+        Deposit deposit = new Deposit();
+        deposit.setAccount(account);
+        deposit.setFecha(LocalDateTime.now());
+        deposit.setMonto(venta.getMontoNeto());
+        account.addDeposito(deposit);
         return venta.getCartera();
     }
 
@@ -71,12 +71,12 @@ public class CarteraService {
             compra.addCargo(c, totalCargo);
         });
         compra.getCartera().update(compra.getActivo());
-        Cuenta cuenta = compra.getCartera().getCuenta();
-        Extraccion extraccion = new Extraccion();
-        extraccion.setCuenta(cuenta);
-        extraccion.setFecha(LocalDateTime.now());
-        extraccion.setMonto(compra.getTotalMovimiento());
-        cuenta.addExtraccion(extraccion);
+        Account account = compra.getCartera().getAccount();
+        Withdrawal withdrawal = new Withdrawal();
+        withdrawal.setAccount(account);
+        withdrawal.setFecha(LocalDateTime.now());
+        withdrawal.setMonto(compra.getTotalMovimiento());
+        account.addExtraccion(withdrawal);
         return compra.getCartera();
     }
 }

@@ -33,7 +33,7 @@ public abstract class MovimientoCuenta extends IdEntity<Long> {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "cuenta_id", referencedColumnName = "id")
-    private Cuenta cuenta;
+    private Account account;
 
     @Column(nullable = false, scale = 3, precision = 10)
     private BigDecimal monto;

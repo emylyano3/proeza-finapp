@@ -11,9 +11,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
-import proeza.finapp.entities.Cuenta;
-import proeza.finapp.entities.Deposito;
-import proeza.finapp.entities.Extraccion;
+import proeza.finapp.entities.Account;
+import proeza.finapp.entities.Deposit;
+import proeza.finapp.entities.Withdrawal;
 import proeza.finapp.rest.dto.CompraDTO;
 import proeza.finapp.rest.dto.VentaDTO;
 
@@ -48,33 +48,35 @@ public class CarteraIT {
 
     @Test
     public void cuandoHagoUnDeposito_entoncesElSaldoDeLaCuentaSeIncrementa() throws Exception {
-        Cuenta cuenta = new Cuenta();
-        cuenta.setId(1L);
-        Deposito deposito = new Deposito(cuenta, BigDecimal.valueOf(1000));
+        Account account = new Account();
+        account.setNumber("ABC00001");
+        Deposit deposit = new Deposit(account, BigDecimal.valueOf(1000));
         this.mockMvc
-                .perform(post("/api/cuenta/deposito")
+                .perform(post("/api/cuenta/ABC00001/deposito")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(getObjectMapper().writeValueAsBytes(deposito)))
+                        .content(getObjectMapper().writeValueAsBytes(deposit)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.saldo", is(4852.16)))
+                .andExpect(jsonPath("$.balance", is(4852.16)))
+                .andExpect(jsonPath("$.number", is("ABC00001")))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void cuandoHagoUnaExtraccion_entoncesElSaldoDeLaCuentaDisminuye() throws Exception {
-        Cuenta cuenta = new Cuenta();
-        cuenta.setId(1L);
-        Extraccion extraccion = new Extraccion(cuenta, BigDecimal.valueOf(1000));
+        Account account = new Account();
+        account.setNumber("ABC00001");
+        Withdrawal withdrawal = new Withdrawal(account, BigDecimal.valueOf(1000));
         this.mockMvc
-                .perform(post("/api/cuenta/extraccion")
+                .perform(post("/api/cuenta/ABC00001/extraccion")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(getObjectMapper().writeValueAsBytes(extraccion)))
+                        .content(getObjectMapper().writeValueAsBytes(withdrawal)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.saldo", is(2852.16)))
+                .andExpect(jsonPath("$.balance", is(2852.16)))
+                .andExpect(jsonPath("$.number", is("ABC00001")))
                 .andExpect(status().isOk());
     }
 
@@ -92,15 +94,14 @@ public class CarteraIT {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.cuenta", notNullValue()))
-                .andExpect(jsonPath("$.cuenta.id", is(1)))
-                .andExpect(jsonPath("$.cuenta.saldo", is(831.108)))
+                .andExpect(jsonPath("$.account", notNullValue()))
+                .andExpect(jsonPath("$.account.id", is(1)))
+                .andExpect(jsonPath("$.account.balance", is(831.108)))
                 .andExpect(jsonPath("$.activos", notNullValue()))
                 .andExpect(jsonPath("$.activos", hasSize(1)))
                 .andExpect(jsonPath("$.activos[0].ppc", is(607.0)))
                 .andExpect(status().isOk());
     }
-
 
     @Test
     public void cuandoHagoUnaVenta_entoncesSeActualizaLaCarteraElActivoYSeDepositaElMontoOperadoEnLaCuenta() throws Exception {
@@ -116,9 +117,9 @@ public class CarteraIT {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.cuenta", notNullValue()))
-                .andExpect(jsonPath("$.cuenta.id", is(1)))
-                .andExpect(jsonPath("$.cuenta.saldo", is(7327.6)))
+                .andExpect(jsonPath("$.account", notNullValue()))
+                .andExpect(jsonPath("$.account.id", is(1)))
+                .andExpect(jsonPath("$.account.balance", is(7327.6)))
                 .andExpect(jsonPath("$.activos", notNullValue()))
                 .andExpect(jsonPath("$.activos", hasSize(1)))
                 .andExpect(jsonPath("$.activos[0].ppc", is(610.5)))

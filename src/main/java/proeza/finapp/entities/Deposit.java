@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @DiscriminatorValue("D")
 @Entity(name = "fin_Deposito")
-public class Deposito extends MovimientoCuenta {
-    public Deposito(Cuenta cuenta, BigDecimal monto) {
-        super(cuenta, monto, null);
+public class Deposit extends MovimientoCuenta {
+    public Deposit(Account account, BigDecimal monto) {
+        super(account, monto, null);
     }
 }
