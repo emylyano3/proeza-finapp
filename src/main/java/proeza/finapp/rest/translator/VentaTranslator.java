@@ -21,7 +21,7 @@ public class VentaTranslator {
     @Autowired
     private ActivoRepository activoRepository;
 
-    public Venta toDomain(VentaDTO ventaDTO){
+    public Venta toDomain(VentaDTO ventaDTO) {
         Venta venta = new Venta();
         venta.setCantidad(ventaDTO.getCantidad());
         venta.setPrecio(ventaDTO.getPrecio());
@@ -29,7 +29,7 @@ public class VentaTranslator {
         venta.setCartera(carteraRepository.findById(ventaDTO.getIdCartera()).orElseThrow());
         venta.setInstrumento(instrumentoRepository.findByTicker(ventaDTO.getTicker()).orElseThrow());
         Activo activo = activoRepository.findByCarteraAndInstrumento(venta.getCartera(), venta.getInstrumento())
-                .orElse(new Activo(venta.getCartera(), venta.getInstrumento()));
+                                        .orElse(new Activo(venta.getCartera(), venta.getInstrumento()));
         venta.setActivo(activo);
         venta.setFecha(ventaDTO.getFecha() == null ? LocalDateTime.now() : ventaDTO.getFecha());
         return venta;

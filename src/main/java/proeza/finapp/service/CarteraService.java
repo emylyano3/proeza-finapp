@@ -30,8 +30,8 @@ public class CarteraService {
     public Cartera crear(Cartera cartera) {
         Objects.requireNonNull(cartera);
         boolean exists = Optional.ofNullable(cartera.getId())
-                .map(carteraRepository::findById)
-                .isPresent();
+                                 .map(carteraRepository::findById)
+                                 .isPresent();
         return exists ? cartera : carteraRepository.save(cartera);
     }
 

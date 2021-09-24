@@ -1,11 +1,11 @@
 package proeza.finapp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import proeza.finapp.entities.Cuenta;
 import proeza.finapp.entities.Deposito;
 import proeza.finapp.entities.Extraccion;
-import proeza.finapp.exception.EntityNotFoundException;
 import proeza.finapp.repository.CuentaRepository;
 
 import javax.transaction.Transactional;
@@ -20,8 +20,8 @@ public class CuentaService {
     private CuentaRepository cuentaRepository;
 
     public Cuenta findById(Long id) {
-        return cuentaRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException(String.format("Cuenta con id %s no encontrada", id)));
+        return cuentaRepository.findById(id)
+                               .orElseThrow(() -> new ResourceNotFoundException(String.format("Cuenta con id %s no encontrada", id)));
     }
 
     public Cuenta deposito(Deposito deposito) {
