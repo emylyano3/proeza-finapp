@@ -37,7 +37,7 @@ public class Asset extends IdEntity<Long> {
     public Asset(Portfolio portfolio, Instrument instrument) {
         this.portfolio = portfolio;
         this.instrument = instrument;
-        this.tenencia = 0;
+        this.holding = 0;
     }
 
     @JsonBackReference
@@ -60,11 +60,11 @@ public class Asset extends IdEntity<Long> {
     private List<Buy> buys = new ArrayList<>();
 
     @Getter
-    @Column
-    private BigDecimal ppc;
+    @Column(name="ppc")
+    private BigDecimal avgPrice;
 
-    @Column
-    private Integer tenencia;
+    @Column(name="tenencia")
+    private Integer holding;
 
     /**
      * Agrega la compra a las compras del activo y adicionalmente la imputa en los valores del activo. Tenencia, ppc, etc.
@@ -100,13 +100,13 @@ public class Asset extends IdEntity<Long> {
             cantidad += c.getQuantity();
             volumen += c.getQuantity() * c.getPrice().doubleValue();
         }
-        ppc = BigDecimal.valueOf(volumen / cantidad);
-        tenencia += buy.getQuantity();
+        avgPrice = BigDecimal.valueOf(volumen / cantidad);
+        holding += buy.getQuantity();
     }
 
     @Transient
     private void imputarVenta(Sale sale) {
         sales.add(sale);
-        tenencia -= sale.getQuantity();
+        holding -= sale.getQuantity();
     }
 }

@@ -9,7 +9,7 @@ import proeza.finapp.entities.Instrument;
 import proeza.finapp.repository.AssetRepository;
 import proeza.finapp.repository.PortfolioRepository;
 import proeza.finapp.repository.InstrumentRepository;
-import proeza.finapp.rest.dto.CompraDTO;
+import proeza.finapp.rest.dto.BuyDTO;
 
 import java.time.LocalDateTime;
 
@@ -23,17 +23,17 @@ public class CompraTranslator {
     @Autowired
     private AssetRepository assetRepository;
 
-    public Buy toDomain(CompraDTO compraDTO) {
-        Portfolio portfolio = portfolioRepository.findById(compraDTO.getIdCartera()).orElseThrow();
-        Instrument instrument = instrumentRepository.findByTicker(compraDTO.getTicker()).orElseThrow();
+    public Buy toDomain(BuyDTO buyDTO) {
+        Portfolio portfolio = portfolioRepository.findById(buyDTO.getIdCartera()).orElseThrow();
+        Instrument instrument = instrumentRepository.findByTicker(buyDTO.getTicker()).orElseThrow();
         Asset asset = assetRepository.findByPortfolioAndInstrument(portfolio, instrument).orElse(new Asset(portfolio, instrument));
         Buy buy = new Buy();
-        buy.setQuantity(compraDTO.getCantidad());
-        buy.setPrice(compraDTO.getPrecio());
+        buy.setQuantity(buyDTO.getCantidad());
+        buy.setPrice(buyDTO.getPrecio());
         buy.setPortfolio(portfolio);
         buy.setInstrument(instrument);
         buy.setAsset(asset);
-        buy.setDate(compraDTO.getFecha() == null ? LocalDateTime.now() : compraDTO.getFecha());
+        buy.setDate(buyDTO.getFecha() == null ? LocalDateTime.now() : buyDTO.getFecha());
         return buy;
     }
 }

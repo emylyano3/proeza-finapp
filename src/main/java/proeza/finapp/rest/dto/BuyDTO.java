@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-public class CompraDTO {
+public class BuyDTO {
     private String ticker;
     private Long idCartera;
     private Integer cantidad;

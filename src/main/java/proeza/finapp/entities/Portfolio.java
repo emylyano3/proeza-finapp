@@ -49,9 +49,9 @@ public class Portfolio extends IdEntity<Long> {
     }
 
     public void update(Asset asset) {
-        if (!getAssets().contains(asset) && asset.getTenencia() > 0)
+        if (!getAssets().contains(asset) && asset.getHolding() > 0)
             getAssets().add(asset);
-        else if (getAssets().contains(asset) && asset.getTenencia() == 0) {
+        else if (getAssets().contains(asset) && asset.getHolding() == 0) {
             getAssets().remove(asset);
             asset.setPortfolio(null);
         }

@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import proeza.finapp.entities.*;
 import proeza.finapp.repository.PortfolioRepository;
-import proeza.finapp.rest.dto.CompraDTO;
-import proeza.finapp.rest.dto.VentaDTO;
+import proeza.finapp.rest.dto.BuyDTO;
+import proeza.finapp.rest.dto.SaleDTO;
 import proeza.finapp.rest.translator.CompraTranslator;
 import proeza.finapp.rest.translator.VentaTranslator;
 
@@ -35,16 +35,16 @@ public class CarteraService {
         return exists ? portfolio : portfolioRepository.save(portfolio);
     }
 
-    public Portfolio sale(VentaDTO ventaDTO) {
+    public Portfolio sale(SaleDTO saleDTO) {
         //TODO Validar con annotations
-        Objects.requireNonNull(ventaDTO);
-        Objects.requireNonNull(ventaDTO.getIdCartera());
-        Objects.requireNonNull(ventaDTO.getTicker());
-        Objects.requireNonNull(ventaDTO.getCantidad());
-        Objects.requireNonNull(ventaDTO.getPrecio());
+        Objects.requireNonNull(saleDTO);
+        Objects.requireNonNull(saleDTO.getIdCartera());
+        Objects.requireNonNull(saleDTO.getTicker());
+        Objects.requireNonNull(saleDTO.getCantidad());
+        Objects.requireNonNull(saleDTO.getPrecio());
         //TODO Verificar si es un movimiento intradiario para aplicar o no los nuevos cargos.
         //TODO Agregar en el broker un flag para saber si aplica o no la exencion de cargo en movs intradiarios
-        Sale sale = translator.toDomain(ventaDTO);
+        Sale sale = translator.toDomain(saleDTO);
         sale.getPortfolio().getBroker().getCharges().forEach(c -> {
             double totalCargo = (c.getTasaAplicable() - 1) * sale.getOperado().doubleValue();
             sale.addCargo(c, totalCargo);
@@ -59,13 +59,13 @@ public class CarteraService {
         return sale.getPortfolio();
     }
 
-    public Portfolio buy(CompraDTO compraDTO) {
-        Objects.requireNonNull(compraDTO);
-        Objects.requireNonNull(compraDTO.getIdCartera());
-        Objects.requireNonNull(compraDTO.getTicker());
-        Objects.requireNonNull(compraDTO.getCantidad());
-        Objects.requireNonNull(compraDTO.getPrecio());
-        Buy buy = compraTranslator.toDomain(compraDTO);
+    public Portfolio buy(BuyDTO buyDTO) {
+        Objects.requireNonNull(buyDTO);
+        Objects.requireNonNull(buyDTO.getIdCartera());
+        Objects.requireNonNull(buyDTO.getTicker());
+        Objects.requireNonNull(buyDTO.getCantidad());
+        Objects.requireNonNull(buyDTO.getPrecio());
+        Buy buy = compraTranslator.toDomain(buyDTO);
         buy.getPortfolio().getBroker().getCharges().forEach(c -> {
             double totalCargo = (c.getTasaAplicable() - 1) * buy.getOperado().doubleValue();
             buy.addCargo(c, totalCargo);

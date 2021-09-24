@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import proeza.finapp.entities.Portfolio;
 import proeza.finapp.repository.PortfolioRepository;
-import proeza.finapp.rest.dto.CompraDTO;
-import proeza.finapp.rest.dto.VentaDTO;
+import proeza.finapp.rest.dto.BuyDTO;
+import proeza.finapp.rest.dto.SaleDTO;
 import proeza.finapp.service.CarteraService;
 
 @CrossOrigin
@@ -30,12 +30,12 @@ public class CarteraController {
     }
 
     @PostMapping("/{cartera_id}/venta")
-    public Portfolio sale(@RequestBody VentaDTO venta) {
+    public Portfolio sale(@RequestBody SaleDTO venta) {
         return carteraService.sale(venta);
     }
 
     @PostMapping("/{cartera_id}/compra")
-    public Portfolio buy(@RequestBody CompraDTO compra) {
+    public Portfolio buy(@RequestBody BuyDTO compra) {
         return carteraService.buy(compra);
     }
 }
