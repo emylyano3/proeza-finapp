@@ -6,8 +6,8 @@ import proeza.finapp.entities.*;
 import proeza.finapp.repository.PortfolioRepository;
 import proeza.finapp.rest.dto.BuyDTO;
 import proeza.finapp.rest.dto.SaleDTO;
-import proeza.finapp.rest.translator.CompraTranslator;
-import proeza.finapp.rest.translator.VentaTranslator;
+import proeza.finapp.rest.translator.BuyTranslator;
+import proeza.finapp.rest.translator.SaleTranslator;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -19,10 +19,10 @@ import java.util.Optional;
 public class PortfolioService {
 
     @Autowired
-    private VentaTranslator translator;
+    private SaleTranslator translator;
 
     @Autowired
-    private CompraTranslator compraTranslator;
+    private BuyTranslator buyTranslator;
 
     @Autowired
     private PortfolioRepository portfolioRepository;
@@ -65,7 +65,7 @@ public class PortfolioService {
         Objects.requireNonNull(buyDTO.getTicker());
         Objects.requireNonNull(buyDTO.getCantidad());
         Objects.requireNonNull(buyDTO.getPrecio());
-        Buy buy = compraTranslator.toDomain(buyDTO);
+        Buy buy = buyTranslator.toDomain(buyDTO);
         buy.getPortfolio().getBroker().getCharges().forEach(c -> {
             double totalCargo = (c.getTasaAplicable() - 1) * buy.getOperado().doubleValue();
             buy.addCargo(c, totalCargo);

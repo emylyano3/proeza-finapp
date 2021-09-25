@@ -13,24 +13,24 @@ import proeza.finapp.rest.dto.SaleDTO;
 import java.time.LocalDateTime;
 
 @Component
-public class VentaTranslator {
+public class SaleTranslator {
 
     @Autowired
-    private PortfolioRepository portfolioRepository;
+    private PortfolioRepository portfolioRepo;
     @Autowired
-    private InstrumentRepository instrumentRepository;
+    private InstrumentRepository instrumentRepo;
     @Autowired
-    private AssetRepository assetRepository;
+    private AssetRepository assetRepo;
 
     public Sale toDomain(SaleDTO saleDTO) {
         Sale sale = new Sale();
         sale.setQuantity(saleDTO.getCantidad());
         sale.setPrice(saleDTO.getPrecio());
         sale.setDate(saleDTO.getFecha());
-        sale.setPortfolio(portfolioRepository.findById(saleDTO.getIdCartera()).orElseThrow());
-        Instrument instrument = instrumentRepository.findByTicker(saleDTO.getTicker()).orElseThrow();
-        Asset asset = assetRepository.findByPortfolioAndInstrument(sale.getPortfolio(), instrument)
-                                     .orElse(new Asset(sale.getPortfolio(), instrument));
+        sale.setPortfolio(portfolioRepo.findById(saleDTO.getIdCartera()).orElseThrow());
+        Instrument instrument = instrumentRepo.findByTicker(saleDTO.getTicker()).orElseThrow();
+        Asset asset = assetRepo.findByPortfolioAndInstrumentAndHoldingGreaterThan(sale.getPortfolio(), instrument, 0)
+                               .orElse(new Asset(sale.getPortfolio(), instrument));
         sale.setAsset(asset);
         sale.setDate(saleDTO.getFecha() == null ? LocalDateTime.now() : saleDTO.getFecha());
         return sale;

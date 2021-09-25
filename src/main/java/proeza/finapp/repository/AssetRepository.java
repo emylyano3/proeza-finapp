@@ -8,5 +8,5 @@ import proeza.finapp.entities.Instrument;
 import java.util.Optional;
 
 public interface AssetRepository extends CrudRepository<Asset, Long> {
-    Optional<Asset> findByPortfolioAndInstrument(Portfolio portfolio, Instrument instrument);
+    Optional<Asset> findByPortfolioAndInstrumentAndHoldingGreaterThan(Portfolio portfolio, Instrument instrument, Integer holding);
 }

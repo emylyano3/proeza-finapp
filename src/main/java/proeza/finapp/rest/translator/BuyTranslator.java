@@ -14,19 +14,20 @@ import proeza.finapp.rest.dto.BuyDTO;
 import java.time.LocalDateTime;
 
 @Component
-public class CompraTranslator {
+public class BuyTranslator {
 
     @Autowired
-    private PortfolioRepository portfolioRepository;
+    private PortfolioRepository portfolioRepo;
     @Autowired
-    private InstrumentRepository instrumentRepository;
+    private InstrumentRepository instrumentRepo;
     @Autowired
-    private AssetRepository assetRepository;
+    private AssetRepository assetRepo;
 
     public Buy toDomain(BuyDTO buyDTO) {
-        Portfolio portfolio = portfolioRepository.findById(buyDTO.getIdCartera()).orElseThrow();
-        Instrument instrument = instrumentRepository.findByTicker(buyDTO.getTicker()).orElseThrow();
-        Asset asset = assetRepository.findByPortfolioAndInstrument(portfolio, instrument).orElse(new Asset(portfolio, instrument));
+        Portfolio portfolio = portfolioRepo.findById(buyDTO.getIdCartera()).orElseThrow();
+        Instrument instrument = instrumentRepo.findByTicker(buyDTO.getTicker()).orElseThrow();
+        Asset asset = assetRepo.findByPortfolioAndInstrumentAndHoldingGreaterThan(portfolio, instrument, 0)
+                               .orElse(new Asset(portfolio, instrument));
         Buy buy = new Buy();
         buy.setQuantity(buyDTO.getCantidad());
         buy.setPrice(buyDTO.getPrecio());
