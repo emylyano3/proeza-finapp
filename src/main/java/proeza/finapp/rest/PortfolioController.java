@@ -6,36 +6,36 @@ import proeza.finapp.entities.Portfolio;
 import proeza.finapp.repository.PortfolioRepository;
 import proeza.finapp.rest.dto.BuyDTO;
 import proeza.finapp.rest.dto.SaleDTO;
-import proeza.finapp.service.CarteraService;
+import proeza.finapp.service.PortfolioService;
 
 @CrossOrigin
 @RestController
 @RequestMapping("api/cartera")
-public class CarteraController {
+public class PortfolioController {
 
     @Autowired
-    private PortfolioRepository carteraRepo;
+    private PortfolioRepository portfolioRepo;
 
     @Autowired
-    private CarteraService carteraService;
+    private PortfolioService portfolioService;
 
     @GetMapping("/{id}")
     public Portfolio get(@PathVariable("id") long id) {
-        return carteraRepo.findById(id);
+        return portfolioRepo.findById(id);
     }
 
     @PostMapping
     public Portfolio create(@RequestBody Portfolio portfolio) {
-        return carteraService.crear(portfolio);
+        return portfolioService.create(portfolio);
     }
 
     @PostMapping("/{cartera_id}/venta")
-    public Portfolio sale(@RequestBody SaleDTO venta) {
-        return carteraService.sale(venta);
+    public Portfolio sale(@RequestBody SaleDTO saleDTO) {
+        return portfolioService.sale(saleDTO);
     }
 
     @PostMapping("/{cartera_id}/compra")
-    public Portfolio buy(@RequestBody BuyDTO compra) {
-        return carteraService.buy(compra);
+    public Portfolio buy(@RequestBody BuyDTO buy) {
+        return portfolioService.buy(buy);
     }
 }

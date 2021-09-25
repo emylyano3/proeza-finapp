@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class CarteraService {
+public class PortfolioService {
 
     @Autowired
     private VentaTranslator translator;
@@ -27,7 +27,7 @@ public class CarteraService {
     @Autowired
     private PortfolioRepository portfolioRepository;
 
-    public Portfolio crear(Portfolio portfolio) {
+    public Portfolio create(Portfolio portfolio) {
         Objects.requireNonNull(portfolio);
         boolean exists = Optional.ofNullable(portfolio.getId())
                                  .map(portfolioRepository::findById)
@@ -55,7 +55,7 @@ public class CarteraService {
         deposit.setAccount(account);
         deposit.setDate(LocalDateTime.now());
         deposit.setAmount(sale.getNetAmount());
-        account.addDeposito(deposit);
+        account.apply(deposit);
         return sale.getPortfolio();
     }
 
@@ -76,7 +76,7 @@ public class CarteraService {
         withdrawal.setAccount(account);
         withdrawal.setDate(LocalDateTime.now());
         withdrawal.setAmount(buy.getMovementTotal());
-        account.addExtraccion(withdrawal);
+        account.apply(withdrawal);
         return buy.getPortfolio();
     }
 }

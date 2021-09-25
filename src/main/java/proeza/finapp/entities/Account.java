@@ -32,23 +32,13 @@ public class Account extends IdEntity<Long> {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     private List<AccountMovement> movements = new ArrayList<>(0);
 
-    @Transient
-    public void credit(BigDecimal amount) {
-        balance = balance.add(amount);
-    }
-
-    @Transient
-    public void debit(BigDecimal amount) {
-        balance = balance.subtract(amount);
-    }
-
     /**
      * Agrega el deposito a los movimientos asociados a la cuenta y actualiza el saldo.
      *
      * @param deposit El deposito a impactar en la cuenta
      */
     @Transient
-    public void addDeposito(Deposit deposit) {
+    public void apply(Deposit deposit) {
         movements.add(deposit);
         credit(deposit.getAmount());
     }
@@ -59,8 +49,18 @@ public class Account extends IdEntity<Long> {
      * @param withdrawal La extraccion a impactar en la cuenta
      */
     @Transient
-    public void addExtraccion(Withdrawal withdrawal) {
+    public void apply(Withdrawal withdrawal) {
         movements.add(withdrawal);
         debit(withdrawal.getAmount());
+    }
+
+    @Transient
+    private void credit(BigDecimal amount) {
+        balance = balance.add(amount);
+    }
+
+    @Transient
+    private void debit(BigDecimal amount) {
+        balance = balance.subtract(amount);
     }
 }

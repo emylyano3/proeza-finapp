@@ -58,7 +58,7 @@ public class AccountService {
                 ? LocalDateTime.now()
                 : deposit.getDate());
         deposit.setAccount(account);
-        account.addDeposito(deposit);
+        account.apply(deposit);
         return account;
     }
 
@@ -72,7 +72,7 @@ public class AccountService {
                 ? LocalDateTime.now()
                 : withdrawal.getDate());
         withdrawal.setAccount(account);
-        account.addExtraccion(withdrawal);
+        account.apply(withdrawal);
         return account;
     }
 

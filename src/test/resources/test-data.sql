@@ -10,8 +10,8 @@ insert into fin_cargo (id, iva, tasa, tipo, broker_id) values (1, 0.21, 0.000799
 insert into fin_cargo (id, iva, tasa, tipo, broker_id) values (2, 0.21, 0.005, 'C', 1);
 
 insert into fin_movimiento_activo
-(id, activo_id, cartera_id, instrumento_id, cantidad, fecha, precio, tipo, cargos) values
-(1, 1, 1, 1, 10, '2021-01-04', 610.50, 'C', 42.843);
+(id, activo_id, cartera_id, cantidad, fecha, precio, tipo, cargos) values
+(1, 1, 1, 10, '2021-01-04', 610.50, 'C', 42.843);
 
 insert into fin_cargo_movimiento (id, monto, cargo_id, movimiento_id) values (1, 5.908, 1, 1);
 insert into fin_cargo_movimiento (id, monto, cargo_id, movimiento_id) values (2, 36.935, 2, 1);

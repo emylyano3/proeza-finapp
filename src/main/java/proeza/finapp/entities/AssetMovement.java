@@ -25,12 +25,11 @@ import java.util.Set;
 
 @Getter
 @Setter
-@ToString(exclude = {"chargeDetails", "instrument", "portfolio"})
+@ToString(exclude = {"chargeDetails", "portfolio"})
 @Entity(name = "fin_MovimientoActivo")
 @Table(name = "fin_movimiento_activo", indexes = {
         @Index(columnList = "cartera_id"),
-        @Index(columnList = "activo_id"),
-        @Index(columnList = "instrumento_id")
+        @Index(columnList = "activo_id")
 })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "tipo", length = 1)
@@ -43,10 +42,6 @@ public class AssetMovement extends IdEntity<Long> {
     @ManyToOne(optional = false)
     @JoinColumn(name = "activo_id", referencedColumnName = "id")
     private Asset asset;
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "instrumento_id", referencedColumnName = "id")
-    private Instrument instrument;
 
     @Column(name="cantidad", nullable = false)
     private Integer quantity;

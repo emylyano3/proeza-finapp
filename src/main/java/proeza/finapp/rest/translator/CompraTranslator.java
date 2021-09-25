@@ -31,7 +31,6 @@ public class CompraTranslator {
         buy.setQuantity(buyDTO.getCantidad());
         buy.setPrice(buyDTO.getPrecio());
         buy.setPortfolio(portfolio);
-        buy.setInstrument(instrument);
         buy.setAsset(asset);
         buy.setDate(buyDTO.getFecha() == null ? LocalDateTime.now() : buyDTO.getFecha());
         return buy;
