@@ -1,9 +1,10 @@
 package proeza.finapp.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,7 +15,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "charges")
 @Entity(name = "fin_Broker")
 @Table(name = "fin_broker")
 public class Broker extends IdEntity<Long> {
@@ -24,7 +25,7 @@ public class Broker extends IdEntity<Long> {
     @Column(nullable = false, length = 256, unique = true)
     private String nombre;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "broker")
-    private Set<Cargo> cargos = new HashSet<>();
+    @Cascade(CascadeType.ALL)
+    private Set<Charge> charges = new HashSet<>();
 }
