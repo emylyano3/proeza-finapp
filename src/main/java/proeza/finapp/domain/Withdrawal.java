@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @DiscriminatorValue("E")
 @Entity(name = "fin_Extraccion")
 public class Withdrawal extends AccountMovement {
-    public Withdrawal(Account account, BigDecimal monto) {
-        super(account, monto, null);
+    public Withdrawal(Account account, BigDecimal amount) {
+        super(account, amount, null);
     }
 }

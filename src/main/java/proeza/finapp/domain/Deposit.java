@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @DiscriminatorValue("D")
 @Entity(name = "fin_Deposito")
 public class Deposit extends AccountMovement {
-    public Deposit(Account account, BigDecimal monto) {
-        super(account, monto, null);
+    public Deposit(Account account, BigDecimal amount) {
+        super(account, amount, null);
     }
 }
