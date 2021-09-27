@@ -2,11 +2,15 @@ package proeza.finapp.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import proeza.finapp.entities.AssetBreadcrumb;
 import proeza.finapp.entities.Portfolio;
 import proeza.finapp.repository.PortfolioRepository;
 import proeza.finapp.rest.dto.BuyDTO;
-import proeza.finapp.rest.dto.SaleDTO;
+import proeza.finapp.rest.dto.SellDTO;
 import proeza.finapp.service.PortfolioService;
+
+import javax.validation.Valid;
+import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -29,13 +33,20 @@ public class PortfolioController {
         return portfolioService.create(portfolio);
     }
 
+    @GetMapping("/{cartera_id}/asset-breadcrumb")
+    public List<AssetBreadcrumb> getAssetBreadcrumb(
+            @PathVariable("cartera_id") Long portfolioId,
+            @RequestParam("ticker") String ticker){
+        return this.portfolioService.getAssetBreadCrumb(portfolioId, ticker);
+    }
+
     @PostMapping("/{cartera_id}/venta")
-    public Portfolio sale(@RequestBody SaleDTO saleDTO) {
-        return portfolioService.sale(saleDTO);
+    public Portfolio sale(@Valid @RequestBody SellDTO sellDTO) {
+        return portfolioService.sell(sellDTO);
     }
 
     @PostMapping("/{cartera_id}/compra")
-    public Portfolio buy(@RequestBody BuyDTO buy) {
-        return portfolioService.buy(buy);
+    public Portfolio buyout(@Valid @RequestBody BuyDTO buyDTO) {
+        return portfolioService.buy(buyDTO);
     }
 }

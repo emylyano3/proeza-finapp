@@ -3,16 +3,21 @@ package proeza.finapp.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import proeza.finapp.entities.*;
+import proeza.finapp.repository.AssetBreadcrumbRepository;
+import proeza.finapp.repository.InstrumentRepository;
 import proeza.finapp.repository.PortfolioRepository;
 import proeza.finapp.rest.dto.BuyDTO;
-import proeza.finapp.rest.dto.SaleDTO;
+import proeza.finapp.rest.dto.SellDTO;
 import proeza.finapp.rest.translator.BuyTranslator;
 import proeza.finapp.rest.translator.SaleTranslator;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 @Service
 @Transactional
@@ -25,26 +30,39 @@ public class PortfolioService {
     private BuyTranslator buyTranslator;
 
     @Autowired
-    private PortfolioRepository portfolioRepository;
+    private PortfolioRepository portfolioRepo;
+
+    @Autowired
+    private InstrumentRepository instrumentRepo;
 
     public Portfolio create(Portfolio portfolio) {
         Objects.requireNonNull(portfolio);
         boolean exists = Optional.ofNullable(portfolio.getId())
-                                 .map(portfolioRepository::findById)
+                                 .map(portfolioRepo::findById)
                                  .isPresent();
-        return exists ? portfolio : portfolioRepository.save(portfolio);
+        return exists ? portfolio : portfolioRepo.save(portfolio);
     }
 
-    public Portfolio sale(SaleDTO saleDTO) {
-        //TODO Validar con annotations
-        Objects.requireNonNull(saleDTO);
-        Objects.requireNonNull(saleDTO.getIdCartera());
-        Objects.requireNonNull(saleDTO.getTicker());
-        Objects.requireNonNull(saleDTO.getCantidad());
-        Objects.requireNonNull(saleDTO.getPrecio());
+    @Autowired
+    private AssetBreadcrumbRepository assetBreadcrumbRepo;
+
+    public List<AssetBreadcrumb> getAssetBreadCrumb(Long portfolioId, String ticker) {
+        Portfolio portfolio = portfolioRepo.findById(portfolioId)
+                                           .orElseThrow(entityNotFound("Portfolio", portfolioId));
+        Instrument instrument = this.instrumentRepo.findByTicker(ticker)
+                                                   .orElseThrow(entityNotFound("Instrument", ticker));
+        return assetBreadcrumbRepo.findByAssetPortfolioAndAssetInstrumentAndRemainsGreaterThan(portfolio, instrument, 0);
+    }
+
+    private Supplier<EntityNotFoundException> entityNotFound(String entityName, Object key) {
+        throw new EntityNotFoundException(String.format("%s not found: %s", entityName, key));
+    }
+
+    public Portfolio sell(SellDTO sellDTO) {
+        Objects.requireNonNull(sellDTO);
         //TODO Verificar si es un movimiento intradiario para aplicar o no los nuevos cargos.
         //TODO Agregar en el broker un flag para saber si aplica o no la exencion de cargo en movs intradiarios
-        Sale sale = translator.toDomain(saleDTO);
+        Sale sale = translator.toDomain(sellDTO);
         sale.getPortfolio().getBroker().getCharges().forEach(c -> {
             double totalCargo = (c.getTasaAplicable() - 1) * sale.getOperado().doubleValue();
             sale.addCargo(c, totalCargo);
@@ -61,10 +79,6 @@ public class PortfolioService {
 
     public Portfolio buy(BuyDTO buyDTO) {
         Objects.requireNonNull(buyDTO);
-        Objects.requireNonNull(buyDTO.getIdCartera());
-        Objects.requireNonNull(buyDTO.getTicker());
-        Objects.requireNonNull(buyDTO.getCantidad());
-        Objects.requireNonNull(buyDTO.getPrecio());
         Buy buy = buyTranslator.toDomain(buyDTO);
         buy.getPortfolio().getBroker().getCharges().forEach(c -> {
             double totalCargo = (c.getTasaAplicable() - 1) * buy.getOperado().doubleValue();
