@@ -64,7 +64,7 @@ public class PortfolioService {
         //TODO Agregar en el broker un flag para saber si aplica o no la exencion de cargo en movs intradiarios
         Sale sale = translator.toDomain(sellDTO);
         sale.getPortfolio().getBroker().getCharges().forEach(c -> {
-            double totalCargo = (c.getTasaAplicable() - 1) * sale.getOperado().doubleValue();
+            double totalCargo = (c.getApplicableRate() - 1) * sale.getOperado().doubleValue();
             sale.addCargo(c, totalCargo);
         });
         sale.getPortfolio().update(sale.getAsset());
@@ -81,7 +81,7 @@ public class PortfolioService {
         Objects.requireNonNull(buyDTO);
         Buy buy = buyTranslator.toDomain(buyDTO);
         buy.getPortfolio().getBroker().getCharges().forEach(c -> {
-            double totalCargo = (c.getTasaAplicable() - 1) * buy.getOperado().doubleValue();
+            double totalCargo = (c.getApplicableRate() - 1) * buy.getOperado().doubleValue();
             buy.addCargo(c, totalCargo);
         });
         buy.getPortfolio().update(buy.getAsset());

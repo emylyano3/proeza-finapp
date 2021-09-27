@@ -19,11 +19,11 @@ import java.util.Set;
 @Entity(name = "fin_Broker")
 @Table(name = "fin_broker")
 public class Broker extends IdEntity<Long> {
-    @Column(nullable = false, length = 32, unique = true)
-    private String codigo;
+    @Column(name="codigo", nullable = false, length = 32, unique = true)
+    private String code;
 
-    @Column(nullable = false, length = 256, unique = true)
-    private String nombre;
+    @Column(name="nombre", nullable = false, length = 256, unique = true)
+    private String name;
 
     @OneToMany(mappedBy = "broker")
     @Cascade(CascadeType.ALL)

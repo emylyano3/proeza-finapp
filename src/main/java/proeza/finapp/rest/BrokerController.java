@@ -14,7 +14,7 @@ public class BrokerController {
     private BrokerService brokerService;
 
     @GetMapping("/{id}")
-    public Broker broker(@PathVariable("id") long id) {
+    public Broker get(@PathVariable("id") long id) {
         return this.brokerService.findById(id);
     }
 
