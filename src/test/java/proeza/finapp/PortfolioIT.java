@@ -11,9 +11,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
-import proeza.finapp.entities.Account;
-import proeza.finapp.entities.Deposit;
-import proeza.finapp.entities.Withdrawal;
+import proeza.finapp.domain.Account;
+import proeza.finapp.domain.Deposit;
+import proeza.finapp.domain.Withdrawal;
 import proeza.finapp.rest.dto.BuyDTO;
 import proeza.finapp.rest.dto.SellDTO;
 
@@ -41,7 +41,7 @@ public class PortfolioIT {
                 .perform(get("/api/cartera/1"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.broker.codigo", is("IOL")))
+                .andExpect(jsonPath("$.broker.code", is("IOL")))
                 .andExpect(status().isOk());
     }
 

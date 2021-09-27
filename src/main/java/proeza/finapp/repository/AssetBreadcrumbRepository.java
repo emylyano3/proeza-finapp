@@ -1,9 +1,9 @@
 package proeza.finapp.repository;
 
 import org.springframework.data.repository.CrudRepository;
-import proeza.finapp.entities.AssetBreadcrumb;
-import proeza.finapp.entities.Instrument;
-import proeza.finapp.entities.Portfolio;
+import proeza.finapp.domain.AssetBreadcrumb;
+import proeza.finapp.domain.Instrument;
+import proeza.finapp.domain.Portfolio;
 
 import java.util.List;
 

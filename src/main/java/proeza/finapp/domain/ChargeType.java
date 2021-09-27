@@ -1,4 +1,4 @@
-package proeza.finapp.entities;
+package proeza.finapp.domain;
 
 import org.springframework.lang.Nullable;
 

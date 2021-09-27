@@ -1,4 +1,4 @@
-package proeza.finapp.entities;
+package proeza.finapp.domain;
 
 import lombok.NoArgsConstructor;
 
@@ -7,10 +7,10 @@ import javax.persistence.Entity;
 import java.math.BigDecimal;
 
 @NoArgsConstructor
-@DiscriminatorValue("E")
-@Entity(name = "fin_Extraccion")
-public class Withdrawal extends AccountMovement {
-    public Withdrawal(Account account, BigDecimal monto) {
+@DiscriminatorValue("D")
+@Entity(name = "fin_Deposito")
+public class Deposit extends AccountMovement {
+    public Deposit(Account account, BigDecimal monto) {
         super(account, monto, null);
     }
 }

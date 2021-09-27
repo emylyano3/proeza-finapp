@@ -2,9 +2,9 @@ package proeza.finapp.rest.translator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import proeza.finapp.entities.Asset;
-import proeza.finapp.entities.Instrument;
-import proeza.finapp.entities.Sale;
+import proeza.finapp.domain.Asset;
+import proeza.finapp.domain.Instrument;
+import proeza.finapp.domain.Sale;
 import proeza.finapp.repository.AssetRepository;
 import proeza.finapp.repository.PortfolioRepository;
 import proeza.finapp.repository.InstrumentRepository;

@@ -2,7 +2,7 @@ package proeza.finapp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import proeza.finapp.entities.*;
+import proeza.finapp.domain.*;
 import proeza.finapp.repository.AssetBreadcrumbRepository;
 import proeza.finapp.repository.InstrumentRepository;
 import proeza.finapp.repository.PortfolioRepository;
@@ -79,18 +79,18 @@ public class PortfolioService {
 
     public Portfolio buy(BuyDTO buyDTO) {
         Objects.requireNonNull(buyDTO);
-        Buy buy = buyTranslator.toDomain(buyDTO);
-        buy.getPortfolio().getBroker().getCharges().forEach(c -> {
-            double totalCargo = (c.getApplicableRate() - 1) * buy.getOperado().doubleValue();
-            buy.addCargo(c, totalCargo);
+        Buyout buyout = buyTranslator.toDomain(buyDTO);
+        buyout.getPortfolio().getBroker().getCharges().forEach(c -> {
+            double totalCargo = (c.getApplicableRate() - 1) * buyout.getOperado().doubleValue();
+            buyout.addCargo(c, totalCargo);
         });
-        buy.getPortfolio().update(buy.getAsset());
-        Account account = buy.getPortfolio().getAccount();
+        buyout.getPortfolio().update(buyout.getAsset());
+        Account account = buyout.getPortfolio().getAccount();
         Withdrawal withdrawal = new Withdrawal();
         withdrawal.setAccount(account);
         withdrawal.setDate(LocalDateTime.now());
-        withdrawal.setAmount(buy.getMovementTotal());
+        withdrawal.setAmount(buyout.getMovementTotal());
         account.apply(withdrawal);
-        return buy.getPortfolio();
+        return buyout.getPortfolio();
     }
 }

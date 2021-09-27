@@ -2,10 +2,10 @@ package proeza.finapp.rest.translator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import proeza.finapp.entities.Asset;
-import proeza.finapp.entities.Portfolio;
-import proeza.finapp.entities.Buy;
-import proeza.finapp.entities.Instrument;
+import proeza.finapp.domain.Asset;
+import proeza.finapp.domain.Portfolio;
+import proeza.finapp.domain.Buyout;
+import proeza.finapp.domain.Instrument;
 import proeza.finapp.repository.AssetRepository;
 import proeza.finapp.repository.PortfolioRepository;
 import proeza.finapp.repository.InstrumentRepository;
@@ -23,17 +23,17 @@ public class BuyTranslator {
     @Autowired
     private AssetRepository assetRepo;
 
-    public Buy toDomain(BuyDTO buyDTO) {
+    public Buyout toDomain(BuyDTO buyDTO) {
         Portfolio portfolio = portfolioRepo.findById(buyDTO.getIdCartera()).orElseThrow();
         Instrument instrument = instrumentRepo.findByTicker(buyDTO.getTicker()).orElseThrow();
         Asset asset = assetRepo.findByPortfolioAndInstrumentAndHoldingGreaterThan(portfolio, instrument, 0)
                                .orElse(new Asset(portfolio, instrument));
-        Buy buy = new Buy();
-        buy.setQuantity(buyDTO.getCantidad());
-        buy.setPrice(buyDTO.getPrecio());
-        buy.setPortfolio(portfolio);
-        buy.setAsset(asset);
-        buy.setDate(buyDTO.getFecha() == null ? LocalDateTime.now() : buyDTO.getFecha());
-        return buy;
+        Buyout buyout = new Buyout();
+        buyout.setQuantity(buyDTO.getCantidad());
+        buyout.setPrice(buyDTO.getPrecio());
+        buyout.setPortfolio(portfolio);
+        buyout.setAsset(asset);
+        buyout.setDate(buyDTO.getFecha() == null ? LocalDateTime.now() : buyDTO.getFecha());
+        return buyout;
     }
 }

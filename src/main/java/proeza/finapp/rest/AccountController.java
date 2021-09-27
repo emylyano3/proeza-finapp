@@ -2,9 +2,9 @@ package proeza.finapp.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import proeza.finapp.entities.Account;
-import proeza.finapp.entities.Deposit;
-import proeza.finapp.entities.Withdrawal;
+import proeza.finapp.domain.Account;
+import proeza.finapp.domain.Deposit;
+import proeza.finapp.domain.Withdrawal;
 import proeza.finapp.service.AccountService;
 
 @CrossOrigin

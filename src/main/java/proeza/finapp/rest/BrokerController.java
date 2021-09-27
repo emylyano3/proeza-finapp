@@ -2,7 +2,7 @@ package proeza.finapp.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import proeza.finapp.entities.Broker;
+import proeza.finapp.domain.Broker;
 import proeza.finapp.service.BrokerService;
 
 @CrossOrigin

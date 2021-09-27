@@ -2,8 +2,8 @@ package proeza.finapp.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import proeza.finapp.entities.AssetBreadcrumb;
-import proeza.finapp.entities.Portfolio;
+import proeza.finapp.domain.AssetBreadcrumb;
+import proeza.finapp.domain.Portfolio;
 import proeza.finapp.repository.PortfolioRepository;
 import proeza.finapp.rest.dto.BuyDTO;
 import proeza.finapp.rest.dto.SellDTO;

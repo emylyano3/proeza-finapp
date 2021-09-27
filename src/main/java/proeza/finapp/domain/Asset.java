@@ -1,4 +1,4 @@
-package proeza.finapp.entities;
+package proeza.finapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -26,7 +26,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(exclude = {"portfolio", "sales", "buys"})
+@ToString(exclude = {"portfolio", "sales", "buyouts"})
 @Entity(name = "fin_Activo")
 @Table(name = "fin_activo", indexes = {
         @Index(columnList = "cartera_id"),
@@ -57,7 +57,7 @@ public class Asset extends IdEntity<Long> {
     @JsonIgnore
     @Where(clause = "tipo = 'C'")
     @OneToMany(mappedBy = "asset", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Buy> buys = new ArrayList<>();
+    private List<Buyout> buyouts = new ArrayList<>();
 
     @Getter
     @Column(name="ppc")
@@ -69,13 +69,13 @@ public class Asset extends IdEntity<Long> {
     /**
      * Agrega la compra a las compras del activo y adicionalmente la imputa en los valores del activo. Tenencia, ppc, etc.
      *
-     * @param buy la compra a imputar
+     * @param buyout la compra a imputar
      */
     @Transient
-    public void addBuy(Buy buy) {
-        if (buy != null && buys.stream().noneMatch(c -> Objects.equals(c, buy))) {
-            buys.add(buy);
-            imputarCompra(buy);
+    public void addBuyout(Buyout buyout) {
+        if (buyout != null && buyouts.stream().noneMatch(c -> Objects.equals(c, buyout))) {
+            buyouts.add(buyout);
+            imputarCompra(buyout);
         }
     }
 
@@ -93,15 +93,15 @@ public class Asset extends IdEntity<Long> {
     }
 
     @Transient
-    private void imputarCompra(Buy buy) {
+    private void imputarCompra(Buyout buyout) {
         int cantidad = 0;
         double volumen = 0;
-        for (Buy c : buys) {
+        for (Buyout c : buyouts) {
             cantidad += c.getQuantity();
             volumen += c.getQuantity() * c.getPrice().doubleValue();
         }
         avgPrice = BigDecimal.valueOf(volumen / cantidad);
-        holding += buy.getQuantity();
+        holding += buyout.getQuantity();
     }
 
     @Transient

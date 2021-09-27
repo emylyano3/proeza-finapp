@@ -1,4 +1,4 @@
-package proeza.finapp.entities;
+package proeza.finapp.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

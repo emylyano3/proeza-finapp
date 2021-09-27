@@ -4,9 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
-import proeza.finapp.entities.Account;
-import proeza.finapp.entities.Deposit;
-import proeza.finapp.entities.Withdrawal;
+import proeza.finapp.domain.Account;
+import proeza.finapp.domain.Deposit;
+import proeza.finapp.domain.Withdrawal;
 import proeza.finapp.repository.AccountRepository;
 
 import javax.transaction.Transactional;
