@@ -1,8 +1,13 @@
 package proeza.finapp.service;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import proeza.finapp.domain.*;
+import proeza.finapp.exception.BusinessException;
+import proeza.finapp.exception.ExceptionFactory;
+import proeza.finapp.patterns.command.Invoker;
 import proeza.finapp.repository.AssetBreadcrumbRepository;
 import proeza.finapp.repository.InstrumentRepository;
 import proeza.finapp.repository.PortfolioRepository;
@@ -10,6 +15,7 @@ import proeza.finapp.rest.dto.BuyDTO;
 import proeza.finapp.rest.dto.SellDTO;
 import proeza.finapp.rest.translator.BuyTranslator;
 import proeza.finapp.rest.translator.SaleTranslator;
+import proeza.finapp.service.command.SellCommand;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
@@ -19,12 +25,16 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+@Log4j2
 @Service
 @Transactional
 public class PortfolioService {
 
     @Autowired
-    private SaleTranslator translator;
+    private SaleTranslator saleTranslator;
+
+    @Autowired
+    private ApplicationContext appContext;
 
     @Autowired
     private BuyTranslator buyTranslator;
@@ -58,23 +68,14 @@ public class PortfolioService {
         throw new EntityNotFoundException(String.format("%s not found: %s", entityName, key));
     }
 
-    public Portfolio sell(SellDTO sellDTO) {
+    public Portfolio sell(SellDTO sellDTO) throws BusinessException {
         Objects.requireNonNull(sellDTO);
-        //TODO Verificar si es un movimiento intradiario para aplicar o no los nuevos cargos.
-        //TODO Agregar en el broker un flag para saber si aplica o no la exencion de cargo en movs intradiarios
-        Sale sale = translator.toDomain(sellDTO);
-        sale.getPortfolio().getBroker().getCharges().forEach(c -> {
-            double totalCargo = (c.getApplicableRate() - 1) * sale.getOperado().doubleValue();
-            sale.addCargo(c, totalCargo);
-        });
-        sale.getPortfolio().update(sale.getAsset());
-        Account account = sale.getPortfolio().getAccount();
-        Deposit deposit = new Deposit();
-        deposit.setAccount(account);
-        deposit.setDate(LocalDateTime.now());
-        deposit.setAmount(sale.getNetAmount());
-        account.apply(deposit);
-        return sale.getPortfolio();
+        SellCommand command = this.appContext.getBean(SellCommand.class)
+                                             .withSale(saleTranslator.toDomain(sellDTO));
+        return new Invoker().invoke(command)
+                            .peek(p -> log.info("Sell executed ok with data: {}", sellDTO))
+                            .peekLeft(e -> log.info("Sell not executed due to error: {})", e.getMessage()))
+                            .getOrElseThrow(ExceptionFactory::newSellException);
     }
 
     public Portfolio buy(BuyDTO buyDTO) {

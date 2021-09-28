@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import proeza.finapp.domain.AssetBreadcrumb;
 import proeza.finapp.domain.Portfolio;
+import proeza.finapp.exception.BusinessException;
 import proeza.finapp.repository.PortfolioRepository;
 import proeza.finapp.rest.dto.BuyDTO;
 import proeza.finapp.rest.dto.SellDTO;
@@ -41,7 +42,7 @@ public class PortfolioController {
     }
 
     @PostMapping("/{cartera_id}/venta")
-    public Portfolio sale(@Valid @RequestBody SellDTO sellDTO) {
+    public Portfolio sale(@Valid @RequestBody SellDTO sellDTO) throws BusinessException {
         return portfolioService.sell(sellDTO);
     }
 
