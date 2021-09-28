@@ -4,7 +4,8 @@ import org.springframework.http.HttpStatus;
 
 public enum ErrorTypes {
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "1000"),
-    INSUFFICIENT_ASSETS(HttpStatus.CONFLICT, "2000")
+    INSUFFICIENT_ASSETS(HttpStatus.CONFLICT, "2000"),
+    INSUFFICIENT_FUNDS(HttpStatus.CONFLICT, "2001")
     ;
 
     private final HttpStatus httpStatus;

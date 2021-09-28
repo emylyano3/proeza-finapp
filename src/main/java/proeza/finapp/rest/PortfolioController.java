@@ -43,11 +43,11 @@ public class PortfolioController {
 
     @PostMapping("/{cartera_id}/venta")
     public Portfolio sale(@Valid @RequestBody SellDTO sellDTO) throws BusinessException {
-        return portfolioService.sell(sellDTO);
+        return this.portfolioService.sell(sellDTO);
     }
 
     @PostMapping("/{cartera_id}/compra")
-    public Portfolio buyout(@Valid @RequestBody BuyDTO buyDTO) {
-        return portfolioService.buy(buyDTO);
+    public Portfolio buyout(@Valid @RequestBody BuyDTO buyDTO) throws BusinessException {
+        return this.portfolioService.buy(buyDTO);
     }
 }
