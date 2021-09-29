@@ -100,6 +100,21 @@ public class PortfolioIT {
     }
 
     @Test
+    public void cuandoHagoUnaCompraConFondosInsufucientes_entoncesLanzaUnaExcepcion() throws Exception {
+        BuyDTO compra = new BuyDTO();
+        compra.setIdCartera(1L);
+        compra.setTicker("YPFD");
+        compra.setPrecio(BigDecimal.valueOf(600));
+        compra.setCantidad(500);
+        this.mockMvc
+                .perform(post("/api/cartera/1/compra")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(getObjectMapper().writeValueAsBytes(compra)))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
     public void cuandoHagoUnaCompraSinTicker_entoncesLanzaUnaException() throws Exception {
         BuyDTO compra = new BuyDTO();
         compra.setIdCartera(1L);
@@ -132,6 +147,21 @@ public class PortfolioIT {
                 .andExpect(jsonPath("$.assets", hasSize(1)))
                 .andExpect(jsonPath("$.assets[0].avgPrice", is(610.5)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void cuandoHagoUnaVentaDeMasActivosDeLosQueTengoEnCartera_entoncesLanzaExcepcion() throws Exception {
+        SellDTO venta = new SellDTO();
+        venta.setIdCartera(1L);
+        venta.setTicker("YPFD");
+        venta.setPrecio(BigDecimal.valueOf(700));
+        venta.setCantidad(50);
+        this.mockMvc
+                .perform(post("/api/cartera/1/venta")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(getObjectMapper().writeValueAsBytes(venta)))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
     }
 
     @Test

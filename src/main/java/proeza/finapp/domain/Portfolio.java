@@ -5,14 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +20,9 @@ public class Portfolio extends IdEntity<Long> {
     @ManyToOne
     @JoinColumn(name = "broker_id", referencedColumnName = "id")
     private Broker broker;
+
+    @Column(name = "nombre", nullable = false, length = 64)
+    private String name;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "cuenta_id", referencedColumnName = "id")

@@ -4,22 +4,27 @@ import io.vavr.control.Either;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import proeza.finapp.domain.Account;
-import proeza.finapp.domain.Deposit;
-import proeza.finapp.domain.Portfolio;
-import proeza.finapp.domain.Sale;
+import proeza.finapp.domain.*;
 import proeza.finapp.exception.BusinessError;
-import proeza.finapp.exception.ErrorTypes;
+import proeza.finapp.exception.BusinessErrorFactory;
 import proeza.finapp.patterns.command.ICommand;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class SellCommand implements ICommand<Portfolio, BusinessError> {
 
     private Sale sale;
+
+    private final Map<Predicate<Sale>, Function<Sale, BusinessError>> validations = Map.of(
+            this::insufficientAssets, BusinessErrorFactory::portfolioInsufficientAssetsError
+    );
 
     @Override
     public Either<BusinessError, Portfolio> execute() {
@@ -30,12 +35,9 @@ public class SellCommand implements ICommand<Portfolio, BusinessError> {
             double totalCargo = (c.getApplicableRate() - 1) * sale.getOperado().doubleValue();
             sale.addCargo(c, totalCargo);
         });
-        if (sale.getQuantity() > sale.getAsset().getHolding()) {
-            //TODO Manejar esta validacion dentro de Sale con spring
-            return Either.left(BusinessError.builder()
-                                            .message("Not enough assets holding to sell")
-                                            .type(ErrorTypes.INSUFFICIENT_ASSETS)
-                                            .build());
+        var opValidationError = processValidations();
+        if (opValidationError.isPresent()) {
+            return Either.left(opValidationError.get());
         }
         sale.getPortfolio().update(sale.getAsset());
         Account account = sale.getPortfolio().getAccount();
@@ -45,6 +47,18 @@ public class SellCommand implements ICommand<Portfolio, BusinessError> {
         deposit.setAmount(sale.getNetAmount());
         account.apply(deposit);
         return Either.right(sale.getPortfolio());
+    }
+
+    private Optional<BusinessError> processValidations() {
+        return validations.entrySet().stream()
+                          .filter(e -> e.getKey().test(sale))
+                          .findAny()
+                          .map(Map.Entry::getValue)
+                          .map(f -> f.apply(sale));
+    }
+
+    private boolean insufficientAssets(Sale sale) {
+        return sale.getQuantity() > sale.getAsset().getHolding();
     }
 
     public SellCommand withSale(Sale sale) {
