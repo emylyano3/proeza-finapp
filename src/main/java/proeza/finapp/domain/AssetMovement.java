@@ -57,22 +57,28 @@ public class AssetMovement extends IdEntity<Long> {
 
     @JsonIgnore
     @OneToMany(mappedBy = "movement", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<MovementCharge> chargeDetails = new HashSet<>();
+    private Set<ChargeMovement> chargeDetails = new HashSet<>();
 
+    /**
+     * El precio del activo * cantidad
+     */
     @JsonIgnore
-    public BigDecimal getOperado() {
+    public BigDecimal getOperated() {
         return BigDecimal.valueOf(price.doubleValue() * quantity);
     }
 
+    /**
+     * El volumen operado + los cargos
+     */
     @JsonIgnore
     public BigDecimal getMovementTotal() {
-        return charges.add(getOperado());
+        return charges.add(getOperated());
     }
 
-    public void addCargo(Charge c, double monto) {
-        BigDecimal toAdd = BigDecimal.valueOf(monto).setScale(3, RoundingMode.CEILING);
+    public void addCharge(Charge c, double amount) {
+        BigDecimal toAdd = BigDecimal.valueOf(amount).setScale(3, RoundingMode.CEILING);
         charges = charges == null ? toAdd : charges.add(toAdd);
-        MovementCharge cm = new MovementCharge();
+        ChargeMovement cm = new ChargeMovement();
         cm.setCharge(c);
         cm.setMovement(this);
         cm.setAmount(toAdd);

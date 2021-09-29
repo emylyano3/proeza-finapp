@@ -34,6 +34,7 @@ public class BuyTranslator {
         buyout.setPortfolio(portfolio);
         buyout.setAsset(asset);
         buyout.setDate(buyDTO.getFecha() == null ? LocalDateTime.now() : buyDTO.getFecha());
+        asset.addBuyout(buyout);
         return buyout;
     }
 }

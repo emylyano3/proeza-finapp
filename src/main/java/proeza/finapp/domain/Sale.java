@@ -17,11 +17,10 @@ public class Sale extends AssetMovement {
      */
     @JsonIgnore
     public BigDecimal getNetAmount() {
-        return getOperado().subtract(getCharges());
+        return getOperated().subtract(getCharges());
     }
 
     public void setAsset(Asset asset) {
         super.setAsset(asset);
-        getAsset().addSale(this);
     }
 }

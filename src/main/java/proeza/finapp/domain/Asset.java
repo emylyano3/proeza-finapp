@@ -59,6 +59,10 @@ public class Asset extends IdEntity<Long> {
     @OneToMany(mappedBy = "asset", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Buyout> buyouts = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "asset", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<AssetBreadcrumb> breadcrumb = new ArrayList<>();
+
     @Getter
     @Column(name="ppc")
     private BigDecimal avgPrice;
@@ -75,7 +79,7 @@ public class Asset extends IdEntity<Long> {
     public void addBuyout(Buyout buyout) {
         if (buyout != null && buyouts.stream().noneMatch(c -> Objects.equals(c, buyout))) {
             buyouts.add(buyout);
-            imputarCompra(buyout);
+            chargeBuyout(buyout);
         }
     }
 
@@ -88,25 +92,30 @@ public class Asset extends IdEntity<Long> {
     public void addSale(Sale sale) {
         if (sale != null && sales.stream().noneMatch(v -> Objects.equals(v, sale))) {
             sales.add(sale);
-            imputarVenta(sale);
+            chargeSale(sale);
         }
     }
 
     @Transient
-    private void imputarCompra(Buyout buyout) {
-        int cantidad = 0;
-        double volumen = 0;
+    private void chargeBuyout(Buyout buyout) {
+        int quantity = 0;
+        double volume = 0;
         for (Buyout c : buyouts) {
-            cantidad += c.getQuantity();
-            volumen += c.getQuantity() * c.getPrice().doubleValue();
+            quantity += c.getQuantity();
+            volume += c.getQuantity() * c.getPrice().doubleValue();
         }
-        avgPrice = BigDecimal.valueOf(volumen / cantidad);
+        avgPrice = BigDecimal.valueOf(volume / quantity);
         holding += buyout.getQuantity();
     }
 
     @Transient
-    private void imputarVenta(Sale sale) {
+    private void chargeSale(Sale sale) {
         sales.add(sale);
         holding -= sale.getQuantity();
+    }
+
+    @Transient
+    public void addBreadcrumb(AssetBreadcrumb bc) {
+        breadcrumb.add(bc);
     }
 }

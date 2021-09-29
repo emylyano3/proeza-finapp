@@ -32,8 +32,8 @@ public class SellCommand implements ICommand<Portfolio, BusinessError> {
         //TODO Agregar en el broker un flag para saber si aplica o no la exencion de cargo en movs intradiarios
         Objects.requireNonNull(sale, "Sale can not be null");
         sale.getPortfolio().getBroker().getCharges().forEach(c -> {
-            double totalCargo = (c.getApplicableRate() - 1) * sale.getOperado().doubleValue();
-            sale.addCargo(c, totalCargo);
+            double totalCargo = (c.getApplicableRate() - 1) * sale.getOperated().doubleValue();
+            sale.addCharge(c, totalCargo);
         });
         var opValidationError = processValidations();
         if (opValidationError.isPresent()) {

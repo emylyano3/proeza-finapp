@@ -12,6 +12,5 @@ public class Buyout extends AssetMovement {
 
     public void setAsset(Asset asset) {
         super.setAsset(asset);
-        getAsset().addBuyout(this);
     }
 }

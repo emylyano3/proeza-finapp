@@ -33,6 +33,7 @@ public class SaleTranslator {
                                .orElse(new Asset(sale.getPortfolio(), instrument));
         sale.setAsset(asset);
         sale.setDate(sellDTO.getFecha() == null ? LocalDateTime.now() : sellDTO.getFecha());
+        asset.addSale(sale);
         return sale;
     }
 }
