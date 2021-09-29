@@ -8,6 +8,7 @@ import lombok.ToString;
 import javax.persistence.Entity;
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -26,13 +27,19 @@ public class AssetBreadcrumb extends IdEntity<Long> {
 
     @Column(name="vendido")
     private int sold;
+
     @Column(name="restante")
     private int remains;
 
-    @Column(name="utilidad_promedio")
-    private BigDecimal avgUtility;
+    @Column(name="utilidad")
+    private BigDecimal utility;
+
     @Column(name="precio_venta_promedio")
     private BigDecimal avgSalePrice;
+
     @Column(name="cargos")
     private BigDecimal charges;
+
+    @Column(name="fecha_compra", nullable = false)
+    private LocalDateTime buyoutDate;
 }

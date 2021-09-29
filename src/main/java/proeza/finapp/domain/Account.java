@@ -56,11 +56,13 @@ public class Account extends IdEntity<Long> {
 
     @Transient
     private void credit(BigDecimal amount) {
-        balance = balance.add(amount);
+        balance = balance.add(amount)
+                         .setScale(ValueScale.ACCOUNT_BALANCE.getScale(), ValueScale.ACCOUNT_BALANCE.getRoundingMode());
     }
 
     @Transient
     private void debit(BigDecimal amount) {
-        balance = balance.subtract(amount);
+        balance = balance.subtract(amount)
+                         .setScale(ValueScale.ACCOUNT_BALANCE.getScale(), ValueScale.ACCOUNT_BALANCE.getRoundingMode());
     }
 }

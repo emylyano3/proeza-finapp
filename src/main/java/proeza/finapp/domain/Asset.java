@@ -8,16 +8,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +18,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(exclude = {"portfolio", "sales", "buyouts"})
+@ToString(exclude = {"portfolio", "sales", "buyouts", "breadcrumb"})
 @Entity(name = "fin_Activo")
 @Table(name = "fin_activo", indexes = {
         @Index(columnList = "cartera_id"),
@@ -60,11 +52,12 @@ public class Asset extends IdEntity<Long> {
     private List<Buyout> buyouts = new ArrayList<>();
 
     @JsonIgnore
+    @Where(clause = "restante > 0")
     @OneToMany(mappedBy = "asset", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<AssetBreadcrumb> breadcrumb = new ArrayList<>();
 
     @Getter
-    @Column(name="ppc")
+    @Column(name="ppc", scale = 2)
     private BigDecimal avgPrice;
 
     @Column(name="tenencia")
@@ -104,7 +97,8 @@ public class Asset extends IdEntity<Long> {
             quantity += c.getQuantity();
             volume += c.getQuantity() * c.getPrice().doubleValue();
         }
-        avgPrice = BigDecimal.valueOf(volume / quantity);
+        avgPrice = BigDecimal.valueOf(volume / quantity)
+                             .setScale(ValueScale.PRICE_SCALE.getScale(), ValueScale.PRICE_SCALE.getRoundingMode());
         holding += buyout.getQuantity();
     }
 

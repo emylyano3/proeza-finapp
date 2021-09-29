@@ -47,7 +47,7 @@ public class BuyCommand implements ICommand<Portfolio, BusinessError> {
         breadcrumb.setSold(0);
         breadcrumb.setRemains(buyout.getQuantity());
         breadcrumb.setCharges(buyout.getCharges());
-        breadcrumb.setAvgUtility(BigDecimal.ZERO);
+        breadcrumb.setUtility(BigDecimal.ZERO);
         breadcrumb.setAvgSalePrice(BigDecimal.ZERO);
         buyout.getAsset().addBreadcrumb(breadcrumb);
     }

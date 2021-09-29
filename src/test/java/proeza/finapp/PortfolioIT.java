@@ -56,7 +56,7 @@ public class PortfolioIT {
                         .content(getObjectMapper().writeValueAsBytes(deposit)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.balance", is(4852.16)))
+                .andExpect(jsonPath("$.balance", is(3608.65)))
                 .andExpect(jsonPath("$.number", is("ABC00001")))
                 .andExpect(status().isOk());
     }
@@ -72,7 +72,7 @@ public class PortfolioIT {
                         .content(getObjectMapper().writeValueAsBytes(withdrawal)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.balance", is(2852.16)))
+                .andExpect(jsonPath("$.balance", is(1608.65)))
                 .andExpect(jsonPath("$.number", is("ABC00001")))
                 .andExpect(status().isOk());
     }
@@ -83,20 +83,20 @@ public class PortfolioIT {
         compra.setIdCartera(1L);
         compra.setTicker("YPFD");
         compra.setPrecio(BigDecimal.valueOf(600));
-        compra.setCantidad(5);
+        compra.setCantidad(2);
         this.mockMvc
                 .perform(post("/api/cartera/1/compra")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getObjectMapper().writeValueAsBytes(compra)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.account", notNullValue()))
                 .andExpect(jsonPath("$.account.id", is(1)))
-                .andExpect(jsonPath("$.account.balance", is(831.108)))
+                .andExpect(jsonPath("$.account.balance", is(1400.23)))
                 .andExpect(jsonPath("$.assets", notNullValue()))
                 .andExpect(jsonPath("$.assets", hasSize(1)))
-                .andExpect(jsonPath("$.assets[0].avgPrice", is(607.0)))
-                .andExpect(status().isOk());
+                .andExpect(jsonPath("$.assets[0].avgPrice", is(613.86)));
     }
 
     @Test
@@ -142,10 +142,10 @@ public class PortfolioIT {
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.account", notNullValue()))
                 .andExpect(jsonPath("$.account.id", is(1)))
-                .andExpect(jsonPath("$.account.balance", is(7327.6)))
+                .andExpect(jsonPath("$.account.balance", is(6084.09)))
                 .andExpect(jsonPath("$.assets", notNullValue()))
                 .andExpect(jsonPath("$.assets", hasSize(1)))
-                .andExpect(jsonPath("$.assets[0].avgPrice", is(610.5)))
+                .andExpect(jsonPath("$.assets[0].avgPrice", is(615.25)))
                 .andExpect(status().isOk());
     }
 

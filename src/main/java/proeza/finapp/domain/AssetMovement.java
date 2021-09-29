@@ -5,20 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -76,7 +65,8 @@ public class AssetMovement extends IdEntity<Long> {
     }
 
     public void addCharge(Charge c, double amount) {
-        BigDecimal toAdd = BigDecimal.valueOf(amount).setScale(3, RoundingMode.CEILING);
+        BigDecimal toAdd = BigDecimal.valueOf(amount)
+                                     .setScale(ValueScale.CHARGE_SCALE.getScale(), ValueScale.CHARGE_SCALE.getRoundingMode());
         charges = charges == null ? toAdd : charges.add(toAdd);
         ChargeMovement cm = new ChargeMovement();
         cm.setCharge(c);
