@@ -8,8 +8,9 @@ public class BusinessErrorFactory {
     public static BusinessError accountInsufficientFundsToPurchaseError(Buyout buyout) {
         return BusinessError.builder()
                             .message(String.format(
-                                    "The account %s has insufficient funds to process the instrument %s purchase",
+                                    "The account %s has insufficient funds to process the purchase of %d units of the %s instrument",
                                     buyout.getPortfolio().getAccount().getNumber(),
+                                    buyout.getQuantity(),
                                     buyout.getAsset().getInstrument().getTicker()))
                             .type(ErrorTypes.INSUFFICIENT_FUNDS)
                             .build();

@@ -9,6 +9,7 @@ import proeza.finapp.exception.BusinessError;
 import proeza.finapp.exception.BusinessErrorFactory;
 import proeza.finapp.patterns.command.ICommand;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
@@ -27,6 +28,7 @@ public class SellCommand implements ICommand<Portfolio, BusinessError> {
     );
 
     @Override
+    @Transactional
     public Either<BusinessError, Portfolio> execute() {
         //TODO Verificar si es un movimiento intradiario para aplicar o no los nuevos cargos.
         //TODO Agregar en el broker un flag para saber si aplica o no la exencion de cargo en movs intradiarios

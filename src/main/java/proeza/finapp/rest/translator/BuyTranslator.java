@@ -6,6 +6,7 @@ import proeza.finapp.domain.Asset;
 import proeza.finapp.domain.Portfolio;
 import proeza.finapp.domain.Buyout;
 import proeza.finapp.domain.Instrument;
+import proeza.finapp.exception.ExceptionFactory;
 import proeza.finapp.repository.AssetRepository;
 import proeza.finapp.repository.PortfolioRepository;
 import proeza.finapp.repository.InstrumentRepository;
@@ -24,8 +25,8 @@ public class BuyTranslator {
     private AssetRepository assetRepo;
 
     public Buyout toDomain(BuyDTO buyDTO) {
-        Portfolio portfolio = portfolioRepo.findById(buyDTO.getIdCartera()).orElseThrow();
-        Instrument instrument = instrumentRepo.findByTicker(buyDTO.getTicker()).orElseThrow();
+        Portfolio portfolio = portfolioRepo.findById(buyDTO.getIdCartera()).orElseThrow(ExceptionFactory::newPortfolioNotFoundException);
+        Instrument instrument = instrumentRepo.findByTicker(buyDTO.getTicker()).orElseThrow(ExceptionFactory::newInstrumentNotFoundException);
         Asset asset = assetRepo.findByPortfolioAndInstrumentAndHoldingGreaterThan(portfolio, instrument, 0)
                                .orElse(new Asset(portfolio, instrument));
         Buyout buyout = new Buyout();
