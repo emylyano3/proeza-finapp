@@ -130,15 +130,15 @@ public class PortfolioIT {
 
     @Test
     public void cuandoHagoUnaVenta_entoncesSeActualizaLaCarteraElActivoYSeDepositaElMontoOperadoEnLaCuenta() throws Exception {
-        SellDTO venta = new SellDTO();
-        venta.setIdCartera(1L);
-        venta.setTicker("YPFD");
-        venta.setPrecio(BigDecimal.valueOf(700));
-        venta.setCantidad(5);
+        SellDTO sale = new SellDTO();
+        sale.setIdCartera(1L);
+        sale.setTicker("YPFD");
+        sale.setPrecio(BigDecimal.valueOf(700));
+        sale.setCantidad(5);
         this.mockMvc
                 .perform(post("/api/cartera/1/venta")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsBytes(venta)))
+                        .content(mapper.writeValueAsBytes(sale)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.account", notNullValue()))

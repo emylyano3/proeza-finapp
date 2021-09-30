@@ -98,7 +98,7 @@ public class Asset extends IdEntity<Long> {
             volume += c.getQuantity() * c.getPrice().doubleValue();
         }
         avgPrice = BigDecimal.valueOf(volume / quantity)
-                             .setScale(ValueScale.PRICE_SCALE.getScale(), ValueScale.PRICE_SCALE.getRoundingMode());
+                             .setScale(ValueScale.ASSET_PRICE_SCALE.getScale(), ValueScale.ASSET_PRICE_SCALE.getRoundingMode());
         holding += buyout.getQuantity();
     }
 
