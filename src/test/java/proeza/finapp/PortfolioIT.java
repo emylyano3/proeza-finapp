@@ -1,8 +1,6 @@
 package proeza.finapp;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -33,8 +31,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class PortfolioIT {
 
     @Autowired
-    protected MockMvc mockMvc;
+    private MockMvc mockMvc;
 
+    @Autowired
+    private ObjectMapper mapper;
+    
     @Test
     public void cuandoBuscoCarteraConIdUno_entoncesElCodigoDelBrokerEsIOL() throws Exception {
         this.mockMvc
@@ -53,7 +54,7 @@ public class PortfolioIT {
         this.mockMvc
                 .perform(post("/api/cuenta/ABC00001/deposito")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(getObjectMapper().writeValueAsBytes(deposit)))
+                        .content(mapper.writeValueAsBytes(deposit)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.balance", is(3608.65)))
@@ -69,7 +70,7 @@ public class PortfolioIT {
         this.mockMvc
                 .perform(post("/api/cuenta/ABC00001/extraccion")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(getObjectMapper().writeValueAsBytes(withdrawal)))
+                        .content(mapper.writeValueAsBytes(withdrawal)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.balance", is(1608.65)))
@@ -87,7 +88,7 @@ public class PortfolioIT {
         this.mockMvc
                 .perform(post("/api/cartera/1/compra")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(getObjectMapper().writeValueAsBytes(compra)))
+                        .content(mapper.writeValueAsBytes(compra)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
@@ -109,7 +110,7 @@ public class PortfolioIT {
         this.mockMvc
                 .perform(post("/api/cartera/1/compra")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(getObjectMapper().writeValueAsBytes(compra)))
+                        .content(mapper.writeValueAsBytes(compra)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
     }
@@ -123,7 +124,7 @@ public class PortfolioIT {
         this.mockMvc
                 .perform(post("/api/cartera/1/compra")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(getObjectMapper().writeValueAsBytes(compra)))
+                        .content(mapper.writeValueAsBytes(compra)))
                 .andExpect(status().is4xxClientError());
     }
 
@@ -137,7 +138,7 @@ public class PortfolioIT {
         this.mockMvc
                 .perform(post("/api/cartera/1/venta")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(getObjectMapper().writeValueAsBytes(venta)))
+                        .content(mapper.writeValueAsBytes(venta)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.account", notNullValue()))
@@ -159,7 +160,7 @@ public class PortfolioIT {
         this.mockMvc
                 .perform(post("/api/cartera/1/venta")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(getObjectMapper().writeValueAsBytes(venta)))
+                        .content(mapper.writeValueAsBytes(venta)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
     }
@@ -173,14 +174,8 @@ public class PortfolioIT {
         this.mockMvc
                 .perform(post("/api/cartera/1/venta")
                                  .contentType(MediaType.APPLICATION_JSON)
-                                 .content(getObjectMapper().writeValueAsBytes(sale)))
+                                 .content(mapper.writeValueAsBytes(sale)))
                 .andExpect(status().is4xxClientError());
     }
 
-    protected ObjectMapper getObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        return mapper;
-    }
 }
