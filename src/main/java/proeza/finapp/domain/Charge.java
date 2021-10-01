@@ -1,4 +1,4 @@
-package proeza.finapp.entities;
+package proeza.finapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -22,21 +22,21 @@ public class Charge extends IdEntity<Long> {
     @JoinColumn(name = "broker_id", referencedColumnName = "id")
     private Broker broker;
 
-    @Column(nullable = false)
-    private String tipo;
+    @Column(name="tipo", nullable = false)
+    private String type;
 
-    @Column(nullable = false, scale = 6, precision = 6)
-    private BigDecimal tasa;
+    @Column(name="tasa", nullable = false, scale = 6, precision = 6)
+    private BigDecimal rate;
 
-    @Column(scale = 6, precision = 6)
-    private BigDecimal iva;
+    @Column(name="iva", scale = 6, precision = 6)
+    private BigDecimal tax;
 
-    public ChargeType getTipo() {
-        return tipo == null ? null : ChargeType.fromId(tipo);
+    public ChargeType getType() {
+        return type == null ? null : ChargeType.fromId(type);
     }
 
-    public void setTipo(ChargeType tipo) {
-        this.tipo = tipo == null ? null : tipo.getId();
+    public void setType(ChargeType type) {
+        this.type = type == null ? null : type.getId();
     }
 
     /**
@@ -45,7 +45,7 @@ public class Charge extends IdEntity<Long> {
      */
     @Transient
     @JsonIgnore
-    public double getTasaAplicable() {
-        return 1 + (1 + iva.doubleValue()) * tasa.doubleValue();
+    public double getApplicableRate() {
+        return 1 + (1 + tax.doubleValue()) * rate.doubleValue();
     }
 }

@@ -1,4 +1,4 @@
-package proeza.finapp.entities;
+package proeza.finapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -56,11 +56,13 @@ public class Account extends IdEntity<Long> {
 
     @Transient
     private void credit(BigDecimal amount) {
-        balance = balance.add(amount);
+        balance = balance.add(amount)
+                         .setScale(DecimalType.ACCOUNT_BALANCE.scale(), DecimalType.ACCOUNT_BALANCE.roundingMode());
     }
 
     @Transient
     private void debit(BigDecimal amount) {
-        balance = balance.subtract(amount);
+        balance = balance.subtract(amount)
+                         .setScale(DecimalType.ACCOUNT_BALANCE.scale(), DecimalType.ACCOUNT_BALANCE.roundingMode());
     }
 }

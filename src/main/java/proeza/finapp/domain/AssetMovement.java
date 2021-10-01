@@ -1,24 +1,13 @@
-package proeza.finapp.entities;
+package proeza.finapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -57,22 +46,29 @@ public class AssetMovement extends IdEntity<Long> {
 
     @JsonIgnore
     @OneToMany(mappedBy = "movement", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<MovementCharge> chargeDetails = new HashSet<>();
+    private Set<ChargeMovement> chargeDetails = new HashSet<>();
 
+    /**
+     * El precio del activo * cantidad
+     */
     @JsonIgnore
-    public BigDecimal getOperado() {
+    public BigDecimal getOperated() {
         return BigDecimal.valueOf(price.doubleValue() * quantity);
     }
 
+    /**
+     * El volumen operado + los cargos
+     */
     @JsonIgnore
     public BigDecimal getMovementTotal() {
-        return charges.add(getOperado());
+        return charges.add(getOperated());
     }
 
-    public void addCargo(Charge c, double monto) {
-        BigDecimal toAdd = BigDecimal.valueOf(monto).setScale(3, RoundingMode.CEILING);
+    public void addCharge(Charge c, double amount) {
+        BigDecimal toAdd = BigDecimal.valueOf(amount)
+                                     .setScale(DecimalType.CHARGE.scale(), DecimalType.CHARGE.roundingMode());
         charges = charges == null ? toAdd : charges.add(toAdd);
-        MovementCharge cm = new MovementCharge();
+        ChargeMovement cm = new ChargeMovement();
         cm.setCharge(c);
         cm.setMovement(this);
         cm.setAmount(toAdd);

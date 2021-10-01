@@ -4,9 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
-import proeza.finapp.entities.Account;
-import proeza.finapp.entities.Deposit;
-import proeza.finapp.entities.Withdrawal;
+import proeza.finapp.domain.Account;
+import proeza.finapp.domain.Deposit;
+import proeza.finapp.domain.Withdrawal;
 import proeza.finapp.repository.AccountRepository;
 
 import javax.transaction.Transactional;
@@ -24,18 +24,14 @@ public class AccountService {
 
     public Account findByNumber(String number) {
         return this.accountRepo.findByNumber(number)
-                          .orElseThrow(accountNotFound(number));
+                               .orElseThrow(accountNotFound(number));
     }
 
     public Account create(Account account) {
         boolean exists = Optional.ofNullable(account.getId())
                                  .map(id -> this.accountRepo.findById(id).isPresent())
                                  .orElse(false);
-        if (exists) {
-            return account;
-        } else {
-            return this.accountRepo.save(account);
-        }
+        return exists ? account : this.accountRepo.save(account);
     }
 
     @Transactional
@@ -55,8 +51,8 @@ public class AccountService {
         Objects.requireNonNull(deposit.getAmount());
         Account account = findByNumber(deposit.getAccount().getNumber());
         deposit.setDate(deposit.getDate() == null
-                ? LocalDateTime.now()
-                : deposit.getDate());
+                                ? LocalDateTime.now()
+                                : deposit.getDate());
         deposit.setAccount(account);
         account.apply(deposit);
         return account;
@@ -69,8 +65,8 @@ public class AccountService {
         Objects.requireNonNull(withdrawal.getAmount());
         Account account = findByNumber(withdrawal.getAccount().getNumber());
         withdrawal.setDate(withdrawal.getDate() == null
-                ? LocalDateTime.now()
-                : withdrawal.getDate());
+                                   ? LocalDateTime.now()
+                                   : withdrawal.getDate());
         withdrawal.setAccount(account);
         account.apply(withdrawal);
         return account;

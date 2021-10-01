@@ -1,82 +1,92 @@
 package proeza.finapp.service;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-import proeza.finapp.entities.*;
+import proeza.finapp.domain.AssetBreadcrumb;
+import proeza.finapp.domain.Instrument;
+import proeza.finapp.domain.Portfolio;
+import proeza.finapp.exception.BusinessException;
+import proeza.finapp.exception.ExceptionFactory;
+import proeza.finapp.patterns.command.Invoker;
+import proeza.finapp.repository.AssetBreadcrumbRepository;
+import proeza.finapp.repository.InstrumentRepository;
 import proeza.finapp.repository.PortfolioRepository;
 import proeza.finapp.rest.dto.BuyDTO;
-import proeza.finapp.rest.dto.SaleDTO;
+import proeza.finapp.rest.dto.SellDTO;
 import proeza.finapp.rest.translator.BuyTranslator;
 import proeza.finapp.rest.translator.SaleTranslator;
+import proeza.finapp.service.command.BuyCommand;
+import proeza.finapp.service.command.SellCommand;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 
+@Log4j2
 @Service
 @Transactional
 public class PortfolioService {
 
     @Autowired
-    private SaleTranslator translator;
+    private SaleTranslator saleTranslator;
+
+    @Autowired
+    private ApplicationContext appContext;
 
     @Autowired
     private BuyTranslator buyTranslator;
 
     @Autowired
-    private PortfolioRepository portfolioRepository;
+    private PortfolioRepository portfolioRepo;
+
+    @Autowired
+    private InstrumentRepository instrumentRepo;
+
+    @Autowired
+    private AssetBreadcrumbRepository assetBreadcrumbRepo;
 
     public Portfolio create(Portfolio portfolio) {
         Objects.requireNonNull(portfolio);
         boolean exists = Optional.ofNullable(portfolio.getId())
-                                 .map(portfolioRepository::findById)
+                                 .map(portfolioRepo::findById)
                                  .isPresent();
-        return exists ? portfolio : portfolioRepository.save(portfolio);
+        return exists ? portfolio : portfolioRepo.save(portfolio);
     }
 
-    public Portfolio sale(SaleDTO saleDTO) {
-        //TODO Validar con annotations
-        Objects.requireNonNull(saleDTO);
-        Objects.requireNonNull(saleDTO.getIdCartera());
-        Objects.requireNonNull(saleDTO.getTicker());
-        Objects.requireNonNull(saleDTO.getCantidad());
-        Objects.requireNonNull(saleDTO.getPrecio());
-        //TODO Verificar si es un movimiento intradiario para aplicar o no los nuevos cargos.
-        //TODO Agregar en el broker un flag para saber si aplica o no la exencion de cargo en movs intradiarios
-        Sale sale = translator.toDomain(saleDTO);
-        sale.getPortfolio().getBroker().getCharges().forEach(c -> {
-            double totalCargo = (c.getTasaAplicable() - 1) * sale.getOperado().doubleValue();
-            sale.addCargo(c, totalCargo);
-        });
-        sale.getPortfolio().update(sale.getAsset());
-        Account account = sale.getPortfolio().getAccount();
-        Deposit deposit = new Deposit();
-        deposit.setAccount(account);
-        deposit.setDate(LocalDateTime.now());
-        deposit.setAmount(sale.getNetAmount());
-        account.apply(deposit);
-        return sale.getPortfolio();
+    public List<AssetBreadcrumb> getAssetBreadCrumb(Long portfolioId, String ticker) {
+        Portfolio portfolio = portfolioRepo.findById(portfolioId)
+                                           .orElseThrow(entityNotFound("Portfolio", portfolioId));
+        Instrument instrument = this.instrumentRepo.findByTicker(ticker)
+                                                   .orElseThrow(entityNotFound("Instrument", ticker));
+        return assetBreadcrumbRepo.findByAssetPortfolioAndAssetInstrumentAndRemainsGreaterThan(portfolio, instrument, 0);
     }
 
-    public Portfolio buy(BuyDTO buyDTO) {
+    private Supplier<EntityNotFoundException> entityNotFound(String entityName, Object key) {
+        throw new EntityNotFoundException(String.format("%s not found: %s", entityName, key));
+    }
+
+    public Portfolio sell(SellDTO sellDTO) throws BusinessException {
+        Objects.requireNonNull(sellDTO);
+        SellCommand command = this.appContext.getBean(SellCommand.class)
+                                             .withSale(saleTranslator.toDomain(sellDTO));
+        return new Invoker().invoke(command)
+                            .peek(p -> log.info("Sale executed ok with data: {}", sellDTO))
+                            .peekLeft(e -> log.info("Sale not executed due to error: {}", e.getMessage()))
+                            .getOrElseThrow(ExceptionFactory::newBusinessException);
+    }
+
+    public Portfolio buy(BuyDTO buyDTO) throws BusinessException {
         Objects.requireNonNull(buyDTO);
-        Objects.requireNonNull(buyDTO.getIdCartera());
-        Objects.requireNonNull(buyDTO.getTicker());
-        Objects.requireNonNull(buyDTO.getCantidad());
-        Objects.requireNonNull(buyDTO.getPrecio());
-        Buy buy = buyTranslator.toDomain(buyDTO);
-        buy.getPortfolio().getBroker().getCharges().forEach(c -> {
-            double totalCargo = (c.getTasaAplicable() - 1) * buy.getOperado().doubleValue();
-            buy.addCargo(c, totalCargo);
-        });
-        buy.getPortfolio().update(buy.getAsset());
-        Account account = buy.getPortfolio().getAccount();
-        Withdrawal withdrawal = new Withdrawal();
-        withdrawal.setAccount(account);
-        withdrawal.setDate(LocalDateTime.now());
-        withdrawal.setAmount(buy.getMovementTotal());
-        account.apply(withdrawal);
-        return buy.getPortfolio();
+        BuyCommand command = this.appContext.getBean(BuyCommand.class)
+                                             .withBuyout(buyTranslator.toDomain(buyDTO));
+        return new Invoker().invoke(command)
+                            .peek(p -> log.info("Buyout executed ok with data: {}", buyDTO))
+                            .peekLeft(e -> log.info("Buyout not executed due to error: {}", e.getMessage()))
+                            .getOrElseThrow(ExceptionFactory::newBusinessException);
     }
 }

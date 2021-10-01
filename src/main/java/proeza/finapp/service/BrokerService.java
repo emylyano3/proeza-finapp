@@ -3,7 +3,7 @@ package proeza.finapp.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
-import proeza.finapp.entities.Broker;
+import proeza.finapp.domain.Broker;
 import proeza.finapp.repository.BrokerRepository;
 import proeza.finapp.repository.ChargeRepository;
 

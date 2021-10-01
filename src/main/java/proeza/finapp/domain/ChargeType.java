@@ -1,14 +1,14 @@
-package proeza.finapp.entities;
+package proeza.finapp.domain;
 
 import org.springframework.lang.Nullable;
 
 import java.util.Arrays;
 
 public enum ChargeType {
-    IMPUESTO("I"),
-    COMISION("C"),
-    DERECHO_MERCADO("D"),
-    OTRO("O");
+    TAX("I"),
+    COMMISSION("C"),
+    MARKET_RIGHT("R"),
+    OTHER("O");
 
     private String id;
 

@@ -1,7 +1,7 @@
 package proeza.finapp.repository;
 
 import org.springframework.data.repository.CrudRepository;
-import proeza.finapp.entities.Account;
+import proeza.finapp.domain.Account;
 
 import java.util.Optional;
 

@@ -2,9 +2,9 @@ package proeza.finapp.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import proeza.finapp.entities.Account;
-import proeza.finapp.entities.Deposit;
-import proeza.finapp.entities.Withdrawal;
+import proeza.finapp.domain.Account;
+import proeza.finapp.domain.Deposit;
+import proeza.finapp.domain.Withdrawal;
 import proeza.finapp.service.AccountService;
 
 @CrossOrigin
@@ -25,18 +25,18 @@ public class AccountController {
         return this.accountService.create(account);
     }
 
-    @PutMapping
+    @PutMapping("/{numero_cuenta}")
     public void update(@PathVariable("numero_cuenta") String number, @RequestBody Account account) {
         this.accountService.update(number, account);
     }
 
     @PostMapping("/{numero_cuenta}/extraccion")
-    public Account withdraw(@RequestBody Withdrawal withdrawal) {
+    public Account withdraw(@PathVariable("numero_cuenta") String number, @RequestBody Withdrawal withdrawal) {
         return this.accountService.withdraw(withdrawal);
     }
 
     @PostMapping("/{numero_cuenta}/deposito")
-    public Account deposit(@RequestBody Deposit deposit) {
+    public Account deposit(@PathVariable("numero_cuenta") String number, @RequestBody Deposit deposit) {
         return this.accountService.deposit(deposit);
     }
 }

@@ -1,4 +1,4 @@
-package proeza.finapp.entities;
+package proeza.finapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
@@ -25,7 +25,7 @@ import java.math.BigDecimal;
         @Index(columnList = "cargo_id"),
         @Index(columnList = "movimiento_id")
 })
-public class MovementCharge extends IdEntity<Long> {
+public class ChargeMovement extends IdEntity<Long> {
 
     @ManyToOne
     @JoinColumn(name = "cargo_id", referencedColumnName = "id")

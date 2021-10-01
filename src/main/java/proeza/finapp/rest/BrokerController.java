@@ -2,7 +2,7 @@ package proeza.finapp.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import proeza.finapp.entities.Broker;
+import proeza.finapp.domain.Broker;
 import proeza.finapp.service.BrokerService;
 
 @CrossOrigin
@@ -14,7 +14,7 @@ public class BrokerController {
     private BrokerService brokerService;
 
     @GetMapping("/{id}")
-    public Broker broker(@PathVariable("id") long id) {
+    public Broker get(@PathVariable("id") long id) {
         return this.brokerService.findById(id);
     }
 

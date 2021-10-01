@@ -1,52 +1,61 @@
-package proeza.finapp.rest.handler;
+package proeza.finapp.exception;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.springframework.http.HttpStatus;
 
-import java.util.Collections;
-import java.util.List;
-
 @JsonDeserialize(builder = ApiError.Builder.class)
 public class ApiError {
 
-    private final HttpStatus status;
+    private final HttpStatus httpStatus;
+    private final String code;
     private final String message;
-    private final List<String> errors;
+    private final String cause;
 
     private ApiError(Builder builder) {
-        status = builder.status;
+        httpStatus = builder.httpStatus;
+        code = builder.code;
         message = builder.message;
-        errors = builder.errors;
+        cause = builder.cause;
     }
 
     public static Builder builder() {
         return new Builder();
     }
 
-    public HttpStatus getStatus() {
-        return this.status;
+    public HttpStatus getHttpStatus() {
+        return httpStatus;
+    }
+
+    public String getCode() {
+        return code;
     }
 
     public String getMessage() {
-        return this.message;
+        return message;
     }
 
-    public List<String> getErrors() {
-        return this.errors;
+    public String getCause() {
+        return cause;
     }
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class Builder {
-        private HttpStatus status;
+        private HttpStatus httpStatus;
+        private String code;
         private String message;
-        private List<String> errors = Collections.emptyList();
+        private String cause;
 
         private Builder() {
         }
 
-        public Builder status(HttpStatus status) {
-            this.status = status;
+        public Builder httpStatus(HttpStatus status) {
+            this.httpStatus = status;
+            return this;
+        }
+
+        public Builder code(String code) {
+            this.code = code;
             return this;
         }
 
@@ -55,13 +64,8 @@ public class ApiError {
             return this;
         }
 
-        public Builder errors(List<String> errors) {
-            this.errors = errors;
-            return this;
-        }
-
-        public Builder error(String error) {
-            this.errors.add(error);
+        public Builder cause(String cause) {
+            this.cause = cause;
             return this;
         }
 

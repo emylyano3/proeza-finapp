@@ -1,4 +1,4 @@
-package proeza.finapp.entities;
+package proeza.finapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -8,16 +8,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +18,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(exclude = {"portfolio", "sales", "buys"})
+@ToString(exclude = {"portfolio", "sales", "buyouts", "breadcrumb"})
 @Entity(name = "fin_Activo")
 @Table(name = "fin_activo", indexes = {
         @Index(columnList = "cartera_id"),
@@ -57,10 +49,15 @@ public class Asset extends IdEntity<Long> {
     @JsonIgnore
     @Where(clause = "tipo = 'C'")
     @OneToMany(mappedBy = "asset", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Buy> buys = new ArrayList<>();
+    private List<Buyout> buyouts = new ArrayList<>();
+
+    @JsonIgnore
+    @Where(clause = "restante > 0")
+    @OneToMany(mappedBy = "asset", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<AssetBreadcrumb> breadcrumb = new ArrayList<>();
 
     @Getter
-    @Column(name="ppc")
+    @Column(name="ppc", scale = 2)
     private BigDecimal avgPrice;
 
     @Column(name="tenencia")
@@ -69,13 +66,13 @@ public class Asset extends IdEntity<Long> {
     /**
      * Agrega la compra a las compras del activo y adicionalmente la imputa en los valores del activo. Tenencia, ppc, etc.
      *
-     * @param buy la compra a imputar
+     * @param buyout la compra a imputar
      */
     @Transient
-    public void addBuy(Buy buy) {
-        if (buy != null && buys.stream().noneMatch(c -> Objects.equals(c, buy))) {
-            buys.add(buy);
-            imputarCompra(buy);
+    public void addBuyout(Buyout buyout) {
+        if (buyout != null && buyouts.stream().noneMatch(c -> Objects.equals(c, buyout))) {
+            buyouts.add(buyout);
+            chargeBuyout(buyout);
         }
     }
 
@@ -88,25 +85,31 @@ public class Asset extends IdEntity<Long> {
     public void addSale(Sale sale) {
         if (sale != null && sales.stream().noneMatch(v -> Objects.equals(v, sale))) {
             sales.add(sale);
-            imputarVenta(sale);
+            chargeSale(sale);
         }
     }
 
     @Transient
-    private void imputarCompra(Buy buy) {
-        int cantidad = 0;
-        double volumen = 0;
-        for (Buy c : buys) {
-            cantidad += c.getQuantity();
-            volumen += c.getQuantity() * c.getPrice().doubleValue();
+    private void chargeBuyout(Buyout buyout) {
+        int quantity = 0;
+        double volume = 0;
+        for (Buyout c : buyouts) {
+            quantity += c.getQuantity();
+            volume += c.getQuantity() * c.getPrice().doubleValue();
         }
-        avgPrice = BigDecimal.valueOf(volumen / cantidad);
-        holding += buy.getQuantity();
+        avgPrice = BigDecimal.valueOf(volume / quantity)
+                             .setScale(DecimalType.ASSET_PRICE.scale(), DecimalType.ASSET_PRICE.roundingMode());
+        holding += buyout.getQuantity();
     }
 
     @Transient
-    private void imputarVenta(Sale sale) {
+    private void chargeSale(Sale sale) {
         sales.add(sale);
         holding -= sale.getQuantity();
+    }
+
+    @Transient
+    public void addBreadcrumb(AssetBreadcrumb bc) {
+        breadcrumb.add(bc);
     }
 }
