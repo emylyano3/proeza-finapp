@@ -35,7 +35,7 @@ public class PortfolioIT {
 
     @Autowired
     private ObjectMapper mapper;
-    
+
     @Test
     public void cuandoBuscoCarteraConIdUno_entoncesElCodigoDelBrokerEsIOL() throws Exception {
         this.mockMvc
@@ -53,8 +53,8 @@ public class PortfolioIT {
         Deposit deposit = new Deposit(account, BigDecimal.valueOf(1000));
         this.mockMvc
                 .perform(post("/api/cuenta/ABC00001/deposito")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsBytes(deposit)))
+                                 .contentType(MediaType.APPLICATION_JSON)
+                                 .content(mapper.writeValueAsBytes(deposit)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.balance", is(3608.65)))
@@ -69,8 +69,8 @@ public class PortfolioIT {
         Withdrawal withdrawal = new Withdrawal(account, BigDecimal.valueOf(1000));
         this.mockMvc
                 .perform(post("/api/cuenta/ABC00001/extraccion")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsBytes(withdrawal)))
+                                 .contentType(MediaType.APPLICATION_JSON)
+                                 .content(mapper.writeValueAsBytes(withdrawal)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.balance", is(1608.65)))
@@ -87,8 +87,8 @@ public class PortfolioIT {
         compra.setCantidad(2);
         this.mockMvc
                 .perform(post("/api/cartera/1/compra")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsBytes(compra)))
+                                 .contentType(MediaType.APPLICATION_JSON)
+                                 .content(mapper.writeValueAsBytes(compra)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
@@ -109,8 +109,8 @@ public class PortfolioIT {
         compra.setCantidad(500);
         this.mockMvc
                 .perform(post("/api/cartera/1/compra")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsBytes(compra)))
+                                 .contentType(MediaType.APPLICATION_JSON)
+                                 .content(mapper.writeValueAsBytes(compra)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
     }
@@ -123,8 +123,8 @@ public class PortfolioIT {
         compra.setCantidad(5);
         this.mockMvc
                 .perform(post("/api/cartera/1/compra")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsBytes(compra)))
+                                 .contentType(MediaType.APPLICATION_JSON)
+                                 .content(mapper.writeValueAsBytes(compra)))
                 .andExpect(status().is4xxClientError());
     }
 
@@ -137,8 +137,8 @@ public class PortfolioIT {
         sale.setCantidad(5);
         this.mockMvc
                 .perform(post("/api/cartera/1/venta")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsBytes(sale)))
+                                 .contentType(MediaType.APPLICATION_JSON)
+                                 .content(mapper.writeValueAsBytes(sale)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.account", notNullValue()))
@@ -159,8 +159,8 @@ public class PortfolioIT {
         venta.setCantidad(50);
         this.mockMvc
                 .perform(post("/api/cartera/1/venta")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsBytes(venta)))
+                                 .contentType(MediaType.APPLICATION_JSON)
+                                 .content(mapper.writeValueAsBytes(venta)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
     }
@@ -177,5 +177,4 @@ public class PortfolioIT {
                                  .content(mapper.writeValueAsBytes(sale)))
                 .andExpect(status().is4xxClientError());
     }
-
 }

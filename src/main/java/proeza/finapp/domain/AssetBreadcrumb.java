@@ -11,6 +11,9 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+import static proeza.finapp.domain.DecimalType.ASSET_PRICE;
+import static proeza.finapp.domain.DecimalType.RATE;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -35,53 +38,112 @@ public class AssetBreadcrumb extends IdEntity<Long> {
     @Column(name = "utilidad")
     private BigDecimal utility;
 
+    @Column(name = "tasa_utilidad")
+    private BigDecimal utilityRate;
+
     @Column(name = "precio_compra", nullable = false)
     private BigDecimal buyPrice;
 
     @Column(name = "precio_venta_promedio")
     private BigDecimal avgSalePrice;
 
-    @Column(name = "cargos", nullable = false)
-    private BigDecimal charges;
+    @Column(name = "cargos_compra", nullable = false)
+    private BigDecimal buyoutCharges;
+
+    @Column(name = "cargos_venta")
+    private BigDecimal saleCharges;
 
     @Column(name = "fecha_compra", nullable = false)
     private LocalDateTime buyoutDate;
 
     @Transient
     public BigDecimal getUtility(BigDecimal price) {
-        return price.divide(buyPrice, ValueScale.ASSET_PRICE_SCALE.getScale(), ValueScale.ASSET_PRICE_SCALE.getRoundingMode())
+        return price.divide(buyPrice, ASSET_PRICE.scale(), ASSET_PRICE.roundingMode())
                     .subtract(BigDecimal.ONE);
     }
 
     @Transient
-    public void updateWithSale(int quantitySold, BigDecimal price, BigDecimal charges) {
-        this.avgSalePrice = calculateAverageSalePrice(this.sold, this.avgSalePrice, quantitySold, price);//700
-        this.remains -= quantitySold; //5
-        this.sold += quantitySold;//5
+    public void updateWithSale(int quantityOperated, BigDecimal price, BigDecimal saleCharges) {
+        this.avgSalePrice = calculateAverageSalePrice(this.sold, this.avgSalePrice, quantityOperated, price);//700
+        this.remains -= quantityOperated; //5
+        this.sold += quantityOperated;//5
         this.buyoutDate = LocalDateTime.now();
-        this.charges = this.charges == null ? charges : this.charges.add(charges);
-        this.utility = calculateUtility(sold, avgSalePrice, buyPrice, charges);//422.94
+        this.saleCharges = this.saleCharges == null ? saleCharges : this.saleCharges.add(saleCharges);//24.558
+        BigDecimal operatedTotalCharges = calculateOperatedTotalCharges(this.sold, this.saleCharges, this.buyoutCharges, this.sold + this.remains);//45.978
+        BigDecimal operatedTotalSpent = calculateOperatedTotalSpent(this.sold, this.buyPrice, operatedTotalCharges);//3098.478
+        BigDecimal operatedTotalIncome = calculateOperatedTotalIncome(this.sold, this.avgSalePrice);//3500
+        this.utility = calculateNetUtility(operatedTotalIncome, operatedTotalSpent);//401.522
+        this.utilityRate = calculateUtilityRate(this.utility, operatedTotalSpent);// 0.12
     }
 
-    private BigDecimal calculateAverageSalePrice(int previouslySold, BigDecimal oldAvgPrice, int currentlySold, BigDecimal price) {
-        oldAvgPrice = oldAvgPrice == null ? BigDecimal.ZERO : oldAvgPrice;
-        double totalPayed = oldAvgPrice.doubleValue() * previouslySold + price.doubleValue() * currentlySold;
+    /**
+     * Calcula el precio de venta promedio contamplando las ventas realizadas anteriormente (precio y cantidad).
+     *
+     * @param previouslySold Las unidades vendidas previamente
+     * @param oldPrice       El precio al que se vendieron las unidades anteriores
+     * @param currentlySold  Lo que se vendio en la operacion actual
+     * @param currentPrice   El precio operado en la operacion actual
+     */
+    private BigDecimal calculateAverageSalePrice(int previouslySold, BigDecimal oldPrice, int currentlySold, BigDecimal currentPrice) {
+        oldPrice = oldPrice == null ? BigDecimal.ZERO : oldPrice;
+        double totalPayed = oldPrice.doubleValue() * previouslySold + currentPrice.doubleValue() * currentlySold;
         return BigDecimal.valueOf(totalPayed / (previouslySold + currentlySold))
-                         .setScale(ValueScale.ASSET_PRICE_SCALE.getScale(), ValueScale.ASSET_PRICE_SCALE.getRoundingMode());
+                         .setScale(ASSET_PRICE.scale(), ASSET_PRICE.roundingMode());
     }
 
-    private BigDecimal calculateUtility(int quantitySold, BigDecimal avgSalePrice, BigDecimal buyPrice, BigDecimal charges) {
-        return BigDecimal.valueOf(quantitySold * avgSalePrice.doubleValue() - quantitySold * buyPrice.doubleValue())
-                         .subtract(charges);
+    /**
+     * Calcula el total gastado en la unidades operadas
+     * @param quantityOperated La cantidad de unidades operadas
+     * @param buyPrice El precio de compra de las unidades
+     * @param charges Los cargos asociados a la compra venta de las unidades de operadas
+     */
+    private BigDecimal calculateOperatedTotalSpent(int quantityOperated, BigDecimal buyPrice, BigDecimal charges) {
+        return BigDecimal.valueOf(buyPrice.doubleValue() * quantityOperated + charges.doubleValue());
+    }
+
+    /**
+     * Calcula los cargos de lo operado hasta el momento, considerando los cargos por venta mas los cargos por compra de solo las unidades operadas en la venta.
+     *
+     * @param quantityOperated Las unidades operadas
+     * @param saleCharges      Los cargos por la venta de las unidades operadas
+     * @param buyoutCharges    Los cargos por la compra de todas las unidades
+     * @param totalPosition    El total de unidades que se compraron
+     */
+    private BigDecimal calculateOperatedTotalCharges(int quantityOperated, BigDecimal saleCharges, BigDecimal buyoutCharges, int totalPosition) {
+        return BigDecimal.valueOf(saleCharges.doubleValue() + buyoutCharges.doubleValue() / totalPosition * quantityOperated);
+    }
+
+    /**
+     * Calcula la entrada bruta por la venta de las unidades
+     */
+    private BigDecimal calculateOperatedTotalIncome(int quantityOperated, BigDecimal salePrice) {
+        return BigDecimal.valueOf(salePrice.doubleValue() * quantityOperated);
+    }
+
+    /**
+     * Calcula la utilidad neta de las unidades operadas, contemplando los costos por la compra del activo, los cargos por la compra y venta
+     * (solo de los activos operados) y el precio promedio de venta
+     *
+     * @param in  Lo entrada bruta por la venta de las unidades
+     * @param out La salida bruta por la compra de las unidades
+     */
+    private BigDecimal calculateNetUtility(BigDecimal in, BigDecimal out) {
+        return in.subtract(out);
+    }
+
+    /**
+     * Calcula la tasa de rendimiento
+     */
+    private BigDecimal calculateUtilityRate(BigDecimal netUtility, BigDecimal totalSpent) {
+        return netUtility.divide(totalSpent, RATE.scale(), RATE.roundingMode());
     }
 
     @Transient
-    public BigDecimal getDailyUtilitySinceBuyDate(BigDecimal price) {
-        ValueScale scale = ValueScale.ASSET_PRICE_SCALE;
+    public BigDecimal getDailyUtilityRateSinceBuyDate(BigDecimal price) {
         Duration duration = Duration.between(buyoutDate, LocalDateTime.now());
-        return price.divide(buyPrice, scale.getScale(), scale.getRoundingMode())
+        return price.divide(buyPrice, RATE.scale(), RATE.roundingMode())
                     .subtract(BigDecimal.ONE)
                     .multiply(BigDecimal.valueOf(100))
-                    .divide(BigDecimal.valueOf(duration.toDays()), scale.getScale(), scale.getRoundingMode());
+                    .divide(BigDecimal.valueOf(duration.toDays()), RATE.scale(), RATE.roundingMode());
     }
 }

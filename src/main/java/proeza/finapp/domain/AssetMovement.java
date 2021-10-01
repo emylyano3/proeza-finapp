@@ -66,7 +66,7 @@ public class AssetMovement extends IdEntity<Long> {
 
     public void addCharge(Charge c, double amount) {
         BigDecimal toAdd = BigDecimal.valueOf(amount)
-                                     .setScale(ValueScale.CHARGE_SCALE.getScale(), ValueScale.CHARGE_SCALE.getRoundingMode());
+                                     .setScale(DecimalType.CHARGE.scale(), DecimalType.CHARGE.roundingMode());
         charges = charges == null ? toAdd : charges.add(toAdd);
         ChargeMovement cm = new ChargeMovement();
         cm.setCharge(c);

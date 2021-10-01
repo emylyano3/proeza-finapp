@@ -73,7 +73,7 @@ public class SellCommand implements ICommand<Portfolio, BusinessError> {
      * Devuelve -1, 0, 1 si el breadcrumb_1 tiene una utilidad diaria mayor, igual o menor al breadcrumb_2
      */
     private int moreUtilityComparator(AssetBreadcrumb _1, AssetBreadcrumb _2) {
-        return -_1.getDailyUtilitySinceBuyDate(sale.getPrice()).compareTo(_2.getDailyUtilitySinceBuyDate(sale.getPrice()));
+        return -_1.getDailyUtilityRateSinceBuyDate(sale.getPrice()).compareTo(_2.getDailyUtilityRateSinceBuyDate(sale.getPrice()));
     }
 
     private void calculateCharges() {

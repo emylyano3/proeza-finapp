@@ -15,9 +15,9 @@ insert into fin_movimiento_activo
 (2, 1, 1, 10, '2021-01-14', 620.00, 'C', 43.504);
 
 INSERT INTO fin_activo_historial
-(id, precio_venta_promedio, utilidad, precio_compra, cargos, restante, vendido, activo_id, fecha_compra) VALUES
-(1, 0, 0, 610.5, 42.843, 10, 0, 1, '2021-01-04'),
-(2, 0, 0, 620.0, 43.504, 10, 0, 1, '2021-01-14');
+(id, precio_venta_promedio, utilidad, precio_compra, cargos_compra, cargos_venta, restante, vendido, activo_id, fecha_compra) VALUES
+(1, 0, 0, 610.5, 42.843, 0, 10, 0, 1, '2021-01-04'),
+(2, 0, 0, 620.0, 43.504, 0, 10, 0, 1, '2021-01-14');
 
 insert into fin_cargo_movimiento (id, monto, cargo_id, movimiento_id) values (1, 5.908, 1, 1);
 insert into fin_cargo_movimiento (id, monto, cargo_id, movimiento_id) values (2, 36.935, 2, 1);
